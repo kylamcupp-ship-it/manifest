@@ -1624,50 +1624,65 @@ function depTypeColor(type) {
 
 function buildDepDiagram(item, uses, usedBy) {
   if (!uses.length && !usedBy.length) return '';
-  const maxN = 5;
-  const uN = uses.slice(0, maxN);
-  const dN = usedBy.slice(0, maxN);
-  const rows = Math.max(uN.length, dN.length, 1);
-  const W = 600, rowH = 50, padY = 28;
-  const H = Math.max(rows * rowH + padY * 2, 90);
+
+  // Group deps by type
+  const groupBy = (arr) => {
+    const m = {};
+    arr.forEach(d => { m[d.type] = (m[d.type]||0) + 1; });
+    return Object.entries(m).sort((a,b) => b[1]-a[1]);
+  };
+  const uGroups = groupBy(uses);
+  const dGroups = groupBy(usedBy);
+  const rows = Math.max(uGroups.length, dGroups.length, 1);
+  const W = 520, rowH = 42, padY = 24;
+  const H = Math.max(rows * rowH + padY * 2, 80);
   const cx = W / 2, cy = H / 2;
-  const leftX = 140, rightX = W - 140;
-  const nodeR = 5, centR = 18;
-  const labelW = 120, labelH = 36;
+  const leftX = 120, rightX = W - 120;
+  const centR = 20;
+
+  const shortT = (t) => {
+    const map = {'Feature Service':'Feature Svc','Map Service':'Map Svc','Image Service':'Image Svc',
+      'Vector Tile Service':'Vector Tiles','Web Mapping Application':'Web App','Web Experience':'Experience'};
+    return map[t] || t;
+  };
 
   let p = [];
 
-  uN.forEach((dep, i) => {
-    const y = padY + (i + 0.5) * (H - padY * 2) / uN.length;
-    const col = depTypeColor(dep.type);
-    p.push(`<path d="M${leftX},${y} C${leftX+50},${y} ${cx-centR-35},${cy} ${cx-centR},${cy}" stroke="${col}" stroke-width="1.5" fill="none" opacity="0.4"/>`);
-    p.push(`<circle cx="${leftX}" cy="${y}" r="${nodeR}" fill="${col}" style="cursor:pointer" onclick="selectItem('${dep.id}')"/>`);
-    p.push(`<foreignObject x="${leftX-nodeR-6-labelW}" y="${y-labelH/2}" width="${labelW}" height="${labelH}" style="cursor:pointer" onclick="selectItem('${dep.id}')">
-      <div xmlns="http://www.w3.org/1999/xhtml" style="font-size:10px;font-family:Inter,sans-serif;color:${col};text-align:right;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word">${escHtml(dep.title)}</div>
-    </foreignObject>`);
+  uGroups.forEach((g, i) => {
+    const [type, count] = g;
+    const y = padY + (i + 0.5) * (H - padY * 2) / uGroups.length;
+    const col = depTypeColor(type);
+    const r = Math.min(8 + count * 1.5, 18);
+    p.push(`<path d="M${leftX+r},${y} C${leftX+r+40},${y} ${cx-centR-30},${cy} ${cx-centR},${cy}" stroke="${col}" stroke-width="1.5" fill="none" opacity="0.35"/>`);
+    p.push(`<circle cx="${leftX}" cy="${y}" r="${r}" fill="${col}" opacity="0.15" stroke="${col}" stroke-width="1.5"/>`);
+    p.push(`<text x="${leftX}" y="${y+4}" text-anchor="middle" font-size="${count>99?'8':'9'}" fill="${col}" font-family="Inter,sans-serif" font-weight="700">${count}</text>`);
+    p.push(`<text x="${leftX-r-6}" y="${y+3}" text-anchor="end" font-size="10" fill="${col}" font-family="Inter,sans-serif">${escHtml(shortT(type))}</text>`);
   });
-  if (uses.length > maxN) p.push(`<text x="${leftX-nodeR-6}" y="${H-6}" text-anchor="end" font-size="9" fill="#6b8aa0" font-family="Inter,sans-serif">+${uses.length-maxN} more</text>`);
 
-  dN.forEach((dep, i) => {
-    const y = padY + (i + 0.5) * (H - padY * 2) / dN.length;
-    const col = depTypeColor(dep.type);
-    p.push(`<path d="M${cx+centR},${cy} C${cx+centR+35},${cy} ${rightX-50},${y} ${rightX},${y}" stroke="${col}" stroke-width="1.5" fill="none" opacity="0.4"/>`);
-    p.push(`<circle cx="${rightX}" cy="${y}" r="${nodeR}" fill="${col}" style="cursor:pointer" onclick="selectItem('${dep.id}')"/>`);
-    p.push(`<foreignObject x="${rightX+nodeR+6}" y="${y-labelH/2}" width="${labelW}" height="${labelH}" style="cursor:pointer" onclick="selectItem('${dep.id}')">
-      <div xmlns="http://www.w3.org/1999/xhtml" style="font-size:10px;font-family:Inter,sans-serif;color:${col};text-align:left;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word">${escHtml(dep.title)}</div>
-    </foreignObject>`);
+  dGroups.forEach((g, i) => {
+    const [type, count] = g;
+    const y = padY + (i + 0.5) * (H - padY * 2) / dGroups.length;
+    const col = depTypeColor(type);
+    const r = Math.min(8 + count * 1.5, 18);
+    p.push(`<path d="M${cx+centR},${cy} C${cx+centR+30},${cy} ${rightX-r-40},${y} ${rightX-r},${y}" stroke="${col}" stroke-width="1.5" fill="none" opacity="0.35"/>`);
+    p.push(`<circle cx="${rightX}" cy="${y}" r="${r}" fill="${col}" opacity="0.15" stroke="${col}" stroke-width="1.5"/>`);
+    p.push(`<text x="${rightX}" y="${y+4}" text-anchor="middle" font-size="${count>99?'8':'9'}" fill="${col}" font-family="Inter,sans-serif" font-weight="700">${count}</text>`);
+    p.push(`<text x="${rightX+r+6}" y="${y+3}" text-anchor="start" font-size="10" fill="${col}" font-family="Inter,sans-serif">${escHtml(shortT(type))}</text>`);
   });
-  if (usedBy.length > maxN) p.push(`<text x="${rightX+nodeR+6}" y="${H-6}" text-anchor="start" font-size="9" fill="#6b8aa0" font-family="Inter,sans-serif">+${usedBy.length-maxN} more</text>`);
 
-  if (!uN.length) p.push(`<text x="${leftX}" y="${cy+4}" text-anchor="middle" font-size="9" fill="#6b8aa0" font-family="Inter,sans-serif">no upstream</text>`);
-  if (!dN.length) p.push(`<text x="${rightX}" y="${cy+4}" text-anchor="middle" font-size="9" fill="#6b8aa0" font-family="Inter,sans-serif">no downstream</text>`);
+  if (!uGroups.length) p.push(`<text x="${leftX}" y="${cy+4}" text-anchor="middle" font-size="9" fill="#6b8aa0" font-family="Inter,sans-serif">no upstream</text>`);
+  if (!dGroups.length) p.push(`<text x="${rightX}" y="${cy+4}" text-anchor="middle" font-size="9" fill="#6b8aa0" font-family="Inter,sans-serif">no downstream</text>`);
 
   // Center node
   const centCol = depTypeColor(item.type);
-  p.push(`<circle cx="${cx}" cy="${cy}" r="${centR}" fill="${centCol}"/>`);
-  p.push(`<foreignObject x="${cx-30}" y="${cy-8}" width="60" height="18">
-    <div xmlns="http://www.w3.org/1999/xhtml" style="font-size:8px;font-family:Inter,sans-serif;color:#fff;text-align:center;line-height:1.2;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-weight:700">${escHtml(item.title)}</div>
+  p.push(`<circle cx="${cx}" cy="${cy}" r="${centR}" fill="${centCol}" opacity="0.2" stroke="${centCol}" stroke-width="2"/>`);
+  p.push(`<foreignObject x="${cx-40}" y="${cy-8}" width="80" height="18">
+    <div xmlns="http://www.w3.org/1999/xhtml" style="font-size:8px;font-family:Inter,sans-serif;color:${centCol};text-align:center;line-height:1.2;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-weight:700">${escHtml(item.title)}</div>
   </foreignObject>`);
+
+  // Column headers
+  if (uGroups.length) p.push(`<text x="${leftX}" y="12" text-anchor="middle" font-size="8" fill="#6b8aa0" font-family="Inter,sans-serif" letter-spacing="0.06em">USES</text>`);
+  if (dGroups.length) p.push(`<text x="${rightX}" y="12" text-anchor="middle" font-size="8" fill="#6b8aa0" font-family="Inter,sans-serif" letter-spacing="0.06em">USED BY</text>`);
 
   return `
     <div class="dep-section">
@@ -1676,13 +1691,9 @@ function buildDepDiagram(item, uses, usedBy) {
         Dependency Map
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 4px 6px;box-shadow:var(--shadow);overflow:hidden">
-        <svg width="100%" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="max-height:260px;display:block">
+        <svg width="100%" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="max-height:240px;display:block">
           ${p.join('')}
         </svg>
-        <div style="display:flex;gap:16px;justify-content:center;margin-top:6px;padding-bottom:4px;font-size:10px;color:var(--text3)">
-          <span style="display:flex;align-items:center;gap:5px"><svg width="10" height="6"><line x1="0" y1="3" x2="10" y2="3" stroke="#c9a84c" stroke-width="2"/></svg>Uses (${uses.length})</span>
-          <span style="display:flex;align-items:center;gap:5px"><svg width="10" height="6"><line x1="0" y1="3" x2="10" y2="3" stroke="#1a8a5a" stroke-width="2"/></svg>Used by (${usedBy.length})</span>
-        </div>
       </div>
     </div>`;
 }
