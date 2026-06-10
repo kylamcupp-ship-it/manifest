@@ -3,42 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Salisbury Org Explorer</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Manifest</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #f4f6fa;
-    --surface: #ffffff;
-    --surface2: #f0f3f8;
-    --surface3: #e8ecf4;
-    --border: #dde2ee;
-    --border2: #c4cce0;
-    --accent: #2e6ee6;
-    --accent2: #1a56c4;
-    --accent-dim: rgba(46,110,230,0.08);
-    --accent-dim2: rgba(46,110,230,0.15);
-    --green: #1a8a5a;
-    --green-bg: #edf7f2;
-    --green-border: #b3deca;
-    --amber: #b06a00;
-    --amber-bg: #fff8ed;
-    --amber-border: #f5d49a;
-    --red: #c0392b;
-    --red-bg: #fdf2f1;
-    --red-border: #f5c6c2;
-    --purple: #6b3fa0;
-    --purple-bg: #f3eeff;
-    --teal: #0e7e7e;
-    --teal-bg: #eaf7f7;
-    --text: #1a1f36;
-    --text2: #4a5068;
-    --text3: #8892aa;
-    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
-    --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+    --bg: #0d1b2a;
+    --surface: #1b2e42;
+    --surface2: #162436;
+    --surface3: #1f3349;
+    --border: #2a3f55;
+    --border2: #3a526b;
+    --accent: #c9a84c;
+    --accent2: #a88834;
+    --accent-dim: rgba(201,168,76,0.12);
+    --accent-dim2: rgba(201,168,76,0.2);
+    --green: #4ecdc4;
+    --green-bg: rgba(78,205,196,0.12);
+    --green-border: rgba(78,205,196,0.35);
+    --amber: #e8a838;
+    --amber-bg: rgba(232,168,56,0.12);
+    --amber-border: rgba(232,168,56,0.35);
+    --red: #e07070;
+    --red-bg: rgba(224,112,112,0.12);
+    --red-border: rgba(224,112,112,0.35);
+    --purple: #9b7fd4;
+    --purple-bg: rgba(155,127,212,0.12);
+    --teal: #4ecdc4;
+    --teal-bg: rgba(78,205,196,0.12);
+    --text: #f0ede4;
+    --text2: #a8bfd0;
+    --text3: #6b8aa0;
+    --shadow: 0 2px 6px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.25);
+    --shadow-md: 0 6px 20px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
     --radius: 8px;
     --radius-lg: 12px;
     --mono: 'JetBrains Mono', monospace;
     --sans: 'Inter', sans-serif;
+    --serif: 'Cinzel', serif;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -59,17 +60,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #eef2fc 0%, #f4f6fa 50%, #edf7f2 100%);
+    background: linear-gradient(160deg, #0d1b2a 0%, #162436 50%, #0d1b2a 100%);
   }
 
   .login-card {
     background: var(--surface);
-    border: 1px solid var(--border);
+    border: 1px solid var(--accent);
     border-radius: var(--radius-lg);
     padding: 44px;
     width: 420px;
     max-width: 94vw;
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(201,168,76,0.15);
   }
 
   .login-logo {
@@ -182,7 +183,7 @@
   .btn-primary {
     width: 100%;
     background: var(--accent);
-    color: #fff;
+    color: #0d1b2a;
     border: none;
     border-radius: var(--radius);
     padding: 11px;
@@ -195,9 +196,9 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    box-shadow: 0 2px 6px rgba(46,110,230,0.3);
+    box-shadow: 0 2px 8px rgba(201,168,76,0.35);
   }
-  .btn-primary:hover { background: var(--accent2); box-shadow: 0 3px 10px rgba(46,110,230,0.35); }
+  .btn-primary:hover { background: var(--accent2); box-shadow: 0 3px 12px rgba(201,168,76,0.4); }
   .btn-primary:active { transform: scale(0.99); }
   .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
 
@@ -213,7 +214,7 @@
   #app { display: none; flex-direction: column; height: 100vh; }
 
   .topbar {
-    background: var(--surface);
+    background: #162436;
     border-bottom: 1px solid var(--border);
     padding: 0 16px;
     height: 50px;
@@ -221,29 +222,31 @@
     align-items: center;
     gap: 12px;
     flex-shrink: 0;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
   }
 
   .topbar-brand {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--text2);
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
+    font-family: var(--serif);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.06em;
     display: flex;
     align-items: center;
     gap: 8px;
     white-space: nowrap;
+    text-shadow: 0 1px 6px rgba(201,168,76,0.25);
   }
 
   .topbar-org {
     font-family: var(--mono);
     font-size: 11px;
-    color: var(--accent2);
+    color: var(--accent);
     background: var(--accent-dim);
     padding: 3px 8px;
     border-radius: 4px;
     font-weight: 500;
+    border: 1px solid rgba(201,168,76,0.2);
   }
 
   .topbar-tabs {
@@ -489,14 +492,14 @@
   }
 
   /* Service types */
-  .tag-fs { background: #e8f0fd; color: #1a56c4; border: 1px solid #c4d5f8; }
+  .tag-fs { background: rgba(46,110,230,0.15); color: #7aaaf0; border: 1px solid rgba(46,110,230,0.35); }
   .tag-ms { background: var(--teal-bg); color: var(--teal); border: 1px solid #b3e0e0; }
   .tag-wm { background: var(--purple-bg); color: var(--purple); border: 1px solid #d4c0f0; }
   .tag-wa { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
   .tag-vt { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
-  .tag-db { background: #fffbea; color: #8a6800; border: 1px solid #f0d97a; }
+  .tag-db { background: rgba(201,168,76,0.12); color: #c9a84c; border: 1px solid rgba(201,168,76,0.35); }
   .tag-sm { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
-  .tag-is { background: #eef0fe; color: #4338ca; border: 1px solid #c7c9f5; }
+  .tag-is { background: rgba(155,127,212,0.15); color: #b49ee0; border: 1px solid rgba(155,127,212,0.35); }
   .tag-other { background: var(--surface3); color: var(--text2); border: 1px solid var(--border); }
 
   /* Sharing */
@@ -579,7 +582,7 @@
     transition: all 0.12s;
     box-shadow: var(--shadow);
   }
-  .btn-action:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+  .btn-action:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); box-shadow: 0 0 8px rgba(201,168,76,0.15); }
 
   .detail-grid {
     display: grid;
@@ -591,6 +594,7 @@
   .stat-card {
     background: var(--surface);
     border: 1px solid var(--border);
+    border-top: 2px solid var(--accent);
     border-radius: var(--radius);
     padding: 14px 16px;
     box-shadow: var(--shadow);
@@ -678,7 +682,7 @@
     text-decoration: none;
     color: inherit;
   }
-  .dep-item:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(46,110,230,0.1); }
+  .dep-item:hover { border-color: var(--accent); box-shadow: 0 2px 10px rgba(201,168,76,0.15); }
 
   .dep-item-icon {
     width: 28px; height: 28px;
@@ -724,7 +728,7 @@
     transition: all 0.12s;
     flex-shrink: 0;
   }
-  .icon-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+  .icon-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); box-shadow: 0 0 6px rgba(201,168,76,0.2); }
 
   /* ─── USERS TAB ─── */
   #tab-users { flex-direction: column; overflow: hidden; }
@@ -841,8 +845,8 @@
   .cleanup-table th {
     position: sticky;
     top: 0;
-    background: var(--surface);
-    border-bottom: 2px solid var(--border);
+    background: #162436;
+    border-bottom: 2px solid var(--accent);
     padding: 9px 14px;
     text-align: left;
     font-size: 10px;
@@ -899,7 +903,7 @@
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(244,246,250,0.88);
+    background: rgba(13,27,42,0.92);
     backdrop-filter: blur(2px);
     z-index: 1000;
     align-items: center;
@@ -914,6 +918,7 @@
     border-top-color: var(--accent);
     border-radius: 50%;
     animation: spin 0.75s linear infinite;
+    box-shadow: 0 0 12px rgba(201,168,76,0.2);
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -961,29 +966,22 @@
 <!-- LOGIN -->
 <div id="login-screen">
   <div class="login-card" style="text-align:center">
-    <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:28px;gap:12px">
-      <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
-        <rect width="52" height="52" rx="12" fill="#e8f0fd"/>
-        <path d="M26 8L44 18V34L26 44L8 34V18L26 8Z" stroke="#2e6ee6" stroke-width="2" fill="none"/>
-        <circle cx="26" cy="26" r="6" fill="#2e6ee6"/>
-      </svg>
+    <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:28px;gap:16px">
+      <img src="manifest_logo.png" width="72" height="72" alt="Manifest logo" style="filter:drop-shadow(0 2px 12px rgba(201,168,76,0.4))">
       <div>
-        <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:4px">City of Salisbury, MD</div>
-        <div style="font-size:22px;font-weight:600;color:var(--text);letter-spacing:-0.02em">Salisbury Org Explorer</div>
+        <div style="font-family:var(--serif);font-size:26px;font-weight:600;color:var(--accent);letter-spacing:0.08em;text-shadow:0 1px 8px rgba(201,168,76,0.3)">MANIFEST</div>
+        <div style="font-size:11px;color:var(--text3);letter-spacing:0.04em;margin-top:4px">ArcGIS Online Organization Explorer</div>
       </div>
     </div>
-    <div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:32px">
-      Browse item dependencies, audit content, and explore data relationships across the City of Salisbury GIS organization.
+    <div style="font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:32px">
+      Navigate your organization's content inventory, uncover item dependencies, and chart what connects to what.
     </div>
-    <!-- Hidden inputs still needed for OAuth logic -->
-    <input id="org-slug" type="hidden" value="salisbury"/>
-    <input id="client-id" type="hidden" value="QhIjoMd47BKm159s"/>
     <button class="btn-primary" onclick="startOAuth()">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 2a6 6 0 100 12A6 6 0 008 2z" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
       Sign in with ArcGIS Online
     </button>
-    <div style="margin-top:16px;font-size:11px;color:var(--text3)">
-      You'll be redirected to the Esri login page.<br>Your data never leaves your browser.
+    <div style="margin-top:16px;font-size:11px;color:var(--text3);line-height:1.9">
+      Works with any ArcGIS Online organization.<br>Your data never leaves your browser.
     </div>
   </div>
 </div>
@@ -992,11 +990,8 @@
 <div id="app">
   <div class="topbar">
     <div class="topbar-brand">
-      <svg width="18" height="18" viewBox="0 0 26 26" fill="none">
-        <path d="M13 2L23 8V18L13 24L3 18V8L13 2Z" stroke="#2e6ee6" stroke-width="1.5" fill="none"/>
-        <circle cx="13" cy="13" r="3" fill="#2e6ee6"/>
-      </svg>
-      Org Explorer
+      <img src="manifest_logo.png" width="22" height="22" alt="Manifest" style="filter:drop-shadow(0 1px 4px rgba(201,168,76,0.5))">
+      MANIFEST
     </div>
     <span class="topbar-org" id="topbar-org-name">loading...</span>
     <div class="topbar-tabs">
@@ -1068,9 +1063,9 @@
     <div class="detail-panel" id="detail-panel">
       <div class="empty-state">
         <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
-          <path d="M22 4L40 14V30L22 40L4 30V14L22 4Z" stroke="#c4cce0" stroke-width="1.5"/>
-          <circle cx="22" cy="22" r="5" stroke="#c4cce0" stroke-width="1.5"/>
-          <path d="M22 17v-7M22 34v-7M17 22h-7M34 22h-7" stroke="#c4cce0" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M22 4L40 14V30L22 40L4 30V14L22 4Z" stroke="#2a3f55" stroke-width="1.5"/>
+          <circle cx="22" cy="22" r="5" stroke="#2a3f55" stroke-width="1.5"/>
+          <path d="M22 17v-7M22 34v-7M17 22h-7M34 22h-7" stroke="#2a3f55" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
         <p>Select an item to see its<br>dependencies and details</p>
       </div>
@@ -1092,8 +1087,8 @@
       <div class="user-detail-panel" id="user-detail">
         <div class="empty-state">
           <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-            <circle cx="20" cy="13" r="6" stroke="#c4cce0" stroke-width="1.5"/>
-            <path d="M5 36c0-8.284 6.716-15 15-15s15 6.716 15 15" stroke="#c4cce0" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="20" cy="13" r="6" stroke="#2a3f55" stroke-width="1.5"/>
+            <path d="M5 36c0-8.284 6.716-15 15-15s15 6.716 15 15" stroke="#2a3f55" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
           <p>Select a user to see<br>their content</p>
         </div>
@@ -1159,8 +1154,7 @@
 
 <script>
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
-const DEFAULT_ORG_SLUG  = 'salisbury';  // Salisbury, MD
-const DEFAULT_CLIENT_ID = 'QhIjoMd47BKm159s';
+const CLIENT_ID = '8cwIfWfceDEcfxvD'; // Manifest — registered on Null Island dev account
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
 let state = {
@@ -1177,40 +1171,37 @@ let cleanupSortDir = { col: 'numViews', dir: 'asc' };
 
 // ─── OAUTH ────────────────────────────────────────────────────────────────────
 function startOAuth() {
-  const slug     = document.getElementById('org-slug').value.trim();
-  const clientId = document.getElementById('client-id').value.trim();
-  if (!slug || !clientId) { showToast('Enter your org slug and Client ID'); return; }
-  const orgUrl  = `https://${slug}.maps.arcgis.com`;
   const redirect = window.location.href.split('?')[0].split('#')[0];
-  sessionStorage.setItem('agol_org', orgUrl);
-  sessionStorage.setItem('agol_client', clientId);
-  localStorage.setItem('agol_org_slug', slug);
-  localStorage.setItem('agol_client_id', clientId);
-  const authUrl = `${orgUrl}/sharing/rest/oauth2/authorize?` +
-    `client_id=${encodeURIComponent(clientId)}&response_type=token&expiration=120` +
+  // Authenticate against www.arcgis.com so users from any org can sign in.
+  // After redirect we call /portals/self to discover the user's org URL.
+  const authUrl = 'https://www.arcgis.com/sharing/rest/oauth2/authorize?' +
+    `client_id=${encodeURIComponent(CLIENT_ID)}&response_type=token&expiration=120` +
     `&redirect_uri=${encodeURIComponent(redirect)}`;
   window.location.href = authUrl;
 }
 
-function checkOAuthCallback() {
+async function checkOAuthCallback() {
   const hash = window.location.hash;
   if (!hash.includes('access_token')) return false;
-  const params = new URLSearchParams(hash.replace('#',''));
+  const params = new URLSearchParams(hash.replace('#', ''));
   const token  = params.get('access_token');
-  const orgUrl = sessionStorage.getItem('agol_org');
-  if (token && orgUrl) {
-    state.token  = token;
-    state.orgUrl = orgUrl;
-    window.history.replaceState({}, document.title, window.location.pathname);
-    return true;
+  if (!token) return false;
+  state.token = token;
+  window.history.replaceState({}, document.title, window.location.pathname);
+  // Discover the user's org URL from www.arcgis.com portals/self
+  try {
+    const r    = await fetch(`https://www.arcgis.com/sharing/rest/portals/self?f=json&token=${encodeURIComponent(token)}`);
+    const info = await r.json();
+    const host = info.portalHostname || 'www.arcgis.com';
+    state.orgUrl = `https://${host}`;
+  } catch(e) {
+    state.orgUrl = 'https://www.arcgis.com';
   }
-  return false;
+  return true;
 }
 
 function signOut() {
   sessionStorage.clear();
-  localStorage.removeItem('agol_org_slug');
-  localStorage.removeItem('agol_client_id');
   location.reload();
 }
 
@@ -1232,8 +1223,8 @@ function showAccessDenied() {
     <div class="login-card" style="text-align:center">
       <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:24px;gap:12px">
         <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-          <circle cx="24" cy="24" r="20" stroke="#c0392b" stroke-width="2"/>
-          <path d="M24 14v12M24 32v.5" stroke="#c0392b" stroke-width="2.4" stroke-linecap="round"/>
+          <circle cx="24" cy="24" r="20" stroke="var(--red)" stroke-width="2"/>
+          <path d="M24 14v12M24 32v.5" stroke="var(--red)" stroke-width="2.4" stroke-linecap="round"/>
         </svg>
         <div style="font-size:20px;font-weight:600;color:var(--text);letter-spacing:-0.02em">Access Restricted</div>
       </div>
@@ -1662,7 +1653,7 @@ function depItemHtml(d) {
   const appUrl = itemAppUrl(d);
   return `
     <div class="dep-item" onclick="selectItem('${d.id}')">
-      <div class="dep-item-icon" style="color:var(--accent2)">${typeIcon(d.type, 15)}</div>
+      <div class="dep-item-icon" style="color:var(--accent)">${typeIcon(d.type, 15)}</div>
       <div class="dep-item-info">
         <div class="dep-item-name">${escHtml(d.title)}</div>
         <div class="dep-item-meta">${escHtml(d.type)} · ${escHtml(d.owner||'')}</div>
@@ -1786,7 +1777,7 @@ function selectUser(username, el) {
       if (!typed.length) return '';
       return `<div class="dep-section">
         <div class="section-heading">
-          <span class="section-icon" style="color:var(--accent2)">${typeIcon(type,13)}</span>
+          <span class="section-icon" style="color:var(--accent)">${typeIcon(type,13)}</span>
           ${escHtml(type)} <span class="count-badge">${typed.length}</span>
         </div>
         ${typed.sort((a,b)=>(b.numViews||0)-(a.numViews||0)).map(item => `
@@ -1969,7 +1960,7 @@ function renderAdminTab() {
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin-bottom:28px">
       ${typesSorted.map(([type,n]) => `
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:11px 14px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow)">
-          <span style="color:var(--accent2)">${typeIcon(type,16)}</span>
+          <span style="color:var(--accent)">${typeIcon(type,16)}</span>
           <div style="flex:1;min-width:0">
             <div style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(type)}</div>
             <div style="font-size:10px;color:var(--text3)">${n} item${n!==1?'s':''}</div>
@@ -1988,7 +1979,7 @@ function renderAdminTab() {
         ['Usage & Status', 'organization.html?tab=status', `<polyline points="1,11 5,6 9,9 15,2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>`]
       ].map(([label, path, svgPath]) => `
         <a class="dep-item" href="${state.orgUrl}/home/${path}" target="_blank" style="text-decoration:none">
-          <div class="dep-item-icon" style="color:var(--accent2)"><svg width="15" height="15" viewBox="0 0 16 16" fill="none">${svgPath}</svg></div>
+          <div class="dep-item-icon" style="color:var(--accent)"><svg width="15" height="15" viewBox="0 0 16 16" fill="none">${svgPath}</svg></div>
           <div class="dep-item-info">
             <div class="dep-item-name">${label}</div>
             <div class="dep-item-meta">Open in ArcGIS Online</div>
@@ -2065,16 +2056,12 @@ function copyToClipboard(text) {
 }
 
 // ─── BOOT ─────────────────────────────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', () => {
-  const savedSlug   = localStorage.getItem('agol_org_slug');
-  const savedClient = localStorage.getItem('agol_client_id');
-  const sessOrg     = sessionStorage.getItem('agol_org');
-  const sessClient  = sessionStorage.getItem('agol_client');
-
-  // Salisbury version: credentials are hardcoded, hidden inputs already set in HTML
-  // (no user-editable fields)
-
-  if (checkOAuthCallback()) initApp();
+window.addEventListener('DOMContentLoaded', async () => {
+  if (window.location.hash.includes('access_token')) {
+    const ok = await checkOAuthCallback();
+    if (ok) { initApp(); return; }
+  }
+  // No token — login screen is shown by default, nothing else to do
 });
 </script>
 </body>
