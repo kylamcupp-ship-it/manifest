@@ -1611,44 +1611,63 @@ function renderItemList() {
 
 
 // ─── DEP DIAGRAM ──────────────────────────────────────────────────────────────
+function depTypeColor(type) {
+  const map = {
+    'Feature Service':'#1a56c4','Map Service':'#0e7e7e','Image Service':'#4338ca',
+    'Vector Tile Service':'#c0392b','Scene Service':'#3d5a73',
+    'Web Map':'#6b3fa0','Web Scene':'#3d5a73','Dashboard':'#8a6800',
+    'Web Experience':'#b06a00','StoryMap':'#1a8a5a',
+    'Web Mapping Application':'#b06a00','Instant App':'#b06a00','Form':'#3d5a73'
+  };
+  return map[type] || '#3d5a73';
+}
+
 function buildDepDiagram(item, uses, usedBy) {
   if (!uses.length && !usedBy.length) return '';
   const maxN = 5;
   const uN = uses.slice(0, maxN);
   const dN = usedBy.slice(0, maxN);
   const rows = Math.max(uN.length, dN.length, 1);
-  const W = 560, rowH = 44, padY = 28;
-  const H = Math.max(rows * rowH + padY * 2, 80);
+  const W = 600, rowH = 50, padY = 28;
+  const H = Math.max(rows * rowH + padY * 2, 90);
   const cx = W / 2, cy = H / 2;
-  const leftX = 100, rightX = W - 100;
-  const nodeR = 5, centR = 16;
-  const trunc = (s, n) => s && s.length > n ? s.substring(0, n) + '\u2026' : (s || '?');
+  const leftX = 140, rightX = W - 140;
+  const nodeR = 5, centR = 18;
+  const labelW = 120, labelH = 36;
 
   let p = [];
 
   uN.forEach((dep, i) => {
     const y = padY + (i + 0.5) * (H - padY * 2) / uN.length;
-    p.push(`<path d="M${leftX},${y} C${leftX+55},${y} ${cx-centR-40},${cy} ${cx-centR},${cy}" stroke="#c9a84c" stroke-width="1.5" fill="none" opacity="0.5"/>`);
-    p.push(`<circle cx="${leftX}" cy="${y}" r="${nodeR}" fill="#c9a84c" style="cursor:pointer" onclick="selectItem('${dep.id}')"/>`);
-    p.push(`<text x="${leftX-nodeR-6}" y="${y+4}" text-anchor="end" font-size="10" fill="#3d5a73" font-family="Inter,sans-serif" style="cursor:pointer" onclick="selectItem('${dep.id}')">${escHtml(trunc(dep.title,22))}</text>`);
+    const col = depTypeColor(dep.type);
+    p.push(`<path d="M${leftX},${y} C${leftX+50},${y} ${cx-centR-35},${cy} ${cx-centR},${cy}" stroke="${col}" stroke-width="1.5" fill="none" opacity="0.4"/>`);
+    p.push(`<circle cx="${leftX}" cy="${y}" r="${nodeR}" fill="${col}" style="cursor:pointer" onclick="selectItem('${dep.id}')"/>`);
+    p.push(`<foreignObject x="${leftX-nodeR-6-labelW}" y="${y-labelH/2}" width="${labelW}" height="${labelH}" style="cursor:pointer" onclick="selectItem('${dep.id}')">
+      <div xmlns="http://www.w3.org/1999/xhtml" style="font-size:10px;font-family:Inter,sans-serif;color:${col};text-align:right;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word">${escHtml(dep.title)}</div>
+    </foreignObject>`);
   });
-  if (uses.length > maxN) p.push(`<text x="${leftX-nodeR-6}" y="${H-8}" text-anchor="end" font-size="9" fill="#6b8aa0" font-family="Inter,sans-serif">+${uses.length-maxN} more</text>`);
+  if (uses.length > maxN) p.push(`<text x="${leftX-nodeR-6}" y="${H-6}" text-anchor="end" font-size="9" fill="#6b8aa0" font-family="Inter,sans-serif">+${uses.length-maxN} more</text>`);
 
   dN.forEach((dep, i) => {
     const y = padY + (i + 0.5) * (H - padY * 2) / dN.length;
-    p.push(`<path d="M${cx+centR},${cy} C${cx+centR+40},${cy} ${rightX-55},${y} ${rightX},${y}" stroke="#1a8a5a" stroke-width="1.5" fill="none" opacity="0.5"/>`);
-    p.push(`<circle cx="${rightX}" cy="${y}" r="${nodeR}" fill="#1a8a5a" style="cursor:pointer" onclick="selectItem('${dep.id}')"/>`);
-    p.push(`<text x="${rightX+nodeR+6}" y="${y+4}" text-anchor="start" font-size="10" fill="#3d5a73" font-family="Inter,sans-serif" style="cursor:pointer" onclick="selectItem('${dep.id}')">${escHtml(trunc(dep.title,22))}</text>`);
+    const col = depTypeColor(dep.type);
+    p.push(`<path d="M${cx+centR},${cy} C${cx+centR+35},${cy} ${rightX-50},${y} ${rightX},${y}" stroke="${col}" stroke-width="1.5" fill="none" opacity="0.4"/>`);
+    p.push(`<circle cx="${rightX}" cy="${y}" r="${nodeR}" fill="${col}" style="cursor:pointer" onclick="selectItem('${dep.id}')"/>`);
+    p.push(`<foreignObject x="${rightX+nodeR+6}" y="${y-labelH/2}" width="${labelW}" height="${labelH}" style="cursor:pointer" onclick="selectItem('${dep.id}')">
+      <div xmlns="http://www.w3.org/1999/xhtml" style="font-size:10px;font-family:Inter,sans-serif;color:${col};text-align:left;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word">${escHtml(dep.title)}</div>
+    </foreignObject>`);
   });
-  if (usedBy.length > maxN) p.push(`<text x="${rightX+nodeR+6}" y="${H-8}" text-anchor="start" font-size="9" fill="#6b8aa0" font-family="Inter,sans-serif">+${usedBy.length-maxN} more</text>`);
+  if (usedBy.length > maxN) p.push(`<text x="${rightX+nodeR+6}" y="${H-6}" text-anchor="start" font-size="9" fill="#6b8aa0" font-family="Inter,sans-serif">+${usedBy.length-maxN} more</text>`);
 
   if (!uN.length) p.push(`<text x="${leftX}" y="${cy+4}" text-anchor="middle" font-size="9" fill="#6b8aa0" font-family="Inter,sans-serif">no upstream</text>`);
   if (!dN.length) p.push(`<text x="${rightX}" y="${cy+4}" text-anchor="middle" font-size="9" fill="#6b8aa0" font-family="Inter,sans-serif">no downstream</text>`);
 
   // Center node
-  const label = trunc(item.title, 14);
-  p.push(`<circle cx="${cx}" cy="${cy}" r="${centR}" fill="#c9a84c"/>`);
-  p.push(`<text x="${cx}" y="${cy+4}" text-anchor="middle" font-size="9" fill="#0d1b2a" font-family="Inter,sans-serif" font-weight="700">${escHtml(label)}</text>`);
+  const centCol = depTypeColor(item.type);
+  p.push(`<circle cx="${cx}" cy="${cy}" r="${centR}" fill="${centCol}"/>`);
+  p.push(`<foreignObject x="${cx-30}" y="${cy-8}" width="60" height="18">
+    <div xmlns="http://www.w3.org/1999/xhtml" style="font-size:8px;font-family:Inter,sans-serif;color:#fff;text-align:center;line-height:1.2;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-weight:700">${escHtml(item.title)}</div>
+  </foreignObject>`);
 
   return `
     <div class="dep-section">
@@ -1657,12 +1676,12 @@ function buildDepDiagram(item, uses, usedBy) {
         Dependency Map
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 4px 6px;box-shadow:var(--shadow);overflow:hidden">
-        <svg width="100%" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="max-height:220px;display:block">
+        <svg width="100%" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="max-height:260px;display:block">
           ${p.join('')}
         </svg>
-        <div style="display:flex;gap:20px;justify-content:center;margin-top:6px;padding-bottom:4px;font-size:10px;color:var(--text3)">
-          <span style="display:flex;align-items:center;gap:5px"><span style="display:inline-block;width:10px;height:2px;background:#c9a84c;border-radius:1px"></span>Uses (${uses.length})</span>
-          <span style="display:flex;align-items:center;gap:5px"><span style="display:inline-block;width:10px;height=2px;background:#1a8a5a;border-radius:1px;height:2px"></span>Used by (${usedBy.length})</span>
+        <div style="display:flex;gap:16px;justify-content:center;margin-top:6px;padding-bottom:4px;font-size:10px;color:var(--text3)">
+          <span style="display:flex;align-items:center;gap:5px"><svg width="10" height="6"><line x1="0" y1="3" x2="10" y2="3" stroke="#c9a84c" stroke-width="2"/></svg>Uses (${uses.length})</span>
+          <span style="display:flex;align-items:center;gap:5px"><svg width="10" height="6"><line x1="0" y1="3" x2="10" y2="3" stroke="#1a8a5a" stroke-width="2"/></svg>Used by (${usedBy.length})</span>
         </div>
       </div>
     </div>`;
@@ -1671,6 +1690,10 @@ function buildDepDiagram(item, uses, usedBy) {
 // ─── ITEM DETAIL ──────────────────────────────────────────────────────────────
 async function selectItem(id) {
   state.selectedItem = state.allItems.find(i => i.id === id);
+  if (!state.selectedItem) {
+    showToast('This item is outside of your organization');
+    return;
+  }
   renderItemList();
   const panel = document.getElementById('detail-panel');
   panel.innerHTML = `<div class="empty-state"><div class="spinner"></div><p>Loading dependencies...</p></div>`;
