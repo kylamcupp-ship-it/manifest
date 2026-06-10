@@ -1,0 +1,2081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salisbury Org Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f6fa;
+    --surface: #ffffff;
+    --surface2: #f0f3f8;
+    --surface3: #e8ecf4;
+    --border: #dde2ee;
+    --border2: #c4cce0;
+    --accent: #2e6ee6;
+    --accent2: #1a56c4;
+    --accent-dim: rgba(46,110,230,0.08);
+    --accent-dim2: rgba(46,110,230,0.15);
+    --green: #1a8a5a;
+    --green-bg: #edf7f2;
+    --green-border: #b3deca;
+    --amber: #b06a00;
+    --amber-bg: #fff8ed;
+    --amber-border: #f5d49a;
+    --red: #c0392b;
+    --red-bg: #fdf2f1;
+    --red-border: #f5c6c2;
+    --purple: #6b3fa0;
+    --purple-bg: #f3eeff;
+    --teal: #0e7e7e;
+    --teal-bg: #eaf7f7;
+    --text: #1a1f36;
+    --text2: #4a5068;
+    --text3: #8892aa;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+    --radius: 8px;
+    --radius-lg: 12px;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 13px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── LOGIN ─── */
+  #login-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #eef2fc 0%, #f4f6fa 50%, #edf7f2 100%);
+  }
+
+  .login-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 44px;
+    width: 420px;
+    max-width: 94vw;
+    box-shadow: var(--shadow-md);
+  }
+
+  .login-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .login-logo-text {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text3);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  .login-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  .login-sub {
+    color: var(--text2);
+    font-size: 13px;
+    margin-bottom: 32px;
+    line-height: 1.7;
+  }
+
+  .field-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text2);
+    margin-bottom: 7px;
+    display: block;
+  }
+
+  .field-row {
+    display: flex;
+    align-items: center;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    margin-bottom: 18px;
+  }
+  .field-row:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-dim);
+  }
+
+  .field-prefix {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    padding: 9px 11px;
+    border-right: 1px solid var(--border);
+    white-space: nowrap;
+    background: var(--surface3);
+    user-select: none;
+  }
+
+  .field-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    padding: 9px 11px;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  .field-input::placeholder { color: var(--text3); }
+
+  .field-suffix {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    padding: 9px 11px;
+    border-left: 1px solid var(--border);
+    background: var(--surface3);
+    user-select: none;
+  }
+
+  .plain-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    padding: 9px 11px;
+    font-family: var(--mono);
+    font-size: 12px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    margin-bottom: 18px;
+  }
+  .plain-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-dim);
+  }
+  .plain-input::placeholder { color: var(--text3); }
+
+  .btn-primary {
+    width: 100%;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 11px;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 2px 6px rgba(46,110,230,0.3);
+  }
+  .btn-primary:hover { background: var(--accent2); box-shadow: 0 3px 10px rgba(46,110,230,0.35); }
+  .btn-primary:active { transform: scale(0.99); }
+  .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .login-note {
+    margin-top: 18px;
+    font-size: 11px;
+    color: var(--text3);
+    text-align: center;
+    line-height: 1.9;
+  }
+
+  /* ─── APP SHELL ─── */
+  #app { display: none; flex-direction: column; height: 100vh; }
+
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 16px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  .topbar-brand {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text2);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
+
+  .topbar-org {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent2);
+    background: var(--accent-dim);
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+
+  .topbar-tabs {
+    display: flex;
+    gap: 2px;
+    margin-left: 8px;
+  }
+
+  .tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--text2);
+    padding: 6px 13px;
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.12s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .tab-btn:hover { background: var(--surface2); color: var(--text); }
+  .tab-btn.active { background: var(--accent-dim2); color: var(--accent); font-weight: 600; }
+
+  .topbar-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .user-chip {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text2);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  .btn-sm {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 5px 11px;
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: all 0.12s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .btn-sm:hover { border-color: var(--border2); color: var(--text); background: var(--surface2); }
+
+  /* ─── TAB PANELS ─── */
+  .tab-panel { display: none; flex: 1; overflow: hidden; }
+  .tab-panel.active { display: flex; }
+
+  /* ─── EXPLORE TAB ─── */
+  #tab-explore { flex-direction: row; }
+
+  .sidebar {
+    width: 210px;
+    min-width: 210px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 14px 12px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .filter-section-title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 8px;
+  }
+
+  .filter-option {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 7px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.1s;
+    font-size: 12px;
+    color: var(--text2);
+  }
+  .filter-option:hover { background: var(--surface2); color: var(--text); }
+  .filter-option.selected { background: var(--accent-dim); color: var(--accent); font-weight: 500; }
+
+  .filter-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .owner-search {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 6px 9px;
+    font-size: 12px;
+    outline: none;
+    margin-bottom: 7px;
+    transition: border-color 0.12s;
+  }
+  .owner-search:focus { border-color: var(--border2); }
+  .owner-search::placeholder { color: var(--text3); }
+
+  .owner-list { display: flex; flex-direction: column; gap: 1px; }
+
+  .owner-chip {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 7px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.1s;
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--text2);
+  }
+  .owner-chip:hover { background: var(--surface2); }
+  .owner-chip.selected { background: var(--accent-dim); color: var(--accent); }
+  .owner-chip input { accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
+
+  /* ─── ITEM LIST ─── */
+  .item-list-panel {
+    width: 320px;
+    min-width: 260px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+  }
+
+  .panel-header {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    background: var(--surface);
+  }
+
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 6px 10px;
+    transition: border-color 0.12s, box-shadow 0.12s;
+  }
+  .search-box:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-dim);
+  }
+  .search-box input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-size: 12px;
+    font-family: var(--sans);
+  }
+  .search-box input::placeholder { color: var(--text3); }
+
+  .panel-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text3);
+  }
+
+  .sort-select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 3px 7px;
+    font-size: 11px;
+    border-radius: 5px;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .item-list { flex: 1; overflow-y: auto; }
+
+  .item-card {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.1s;
+    border-left: 2px solid transparent;
+  }
+  .item-card:hover { background: var(--surface); }
+  .item-card.selected { background: var(--surface); border-left-color: var(--accent); }
+
+  .item-name {
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 3px;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .item-owner {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    margin-bottom: 5px;
+  }
+
+  .tag-row { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+
+  .tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+  }
+
+  /* Service types */
+  .tag-fs { background: #e8f0fd; color: #1a56c4; border: 1px solid #c4d5f8; }
+  .tag-ms { background: var(--teal-bg); color: var(--teal); border: 1px solid #b3e0e0; }
+  .tag-wm { background: var(--purple-bg); color: var(--purple); border: 1px solid #d4c0f0; }
+  .tag-wa { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+  .tag-vt { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+  .tag-db { background: #fffbea; color: #8a6800; border: 1px solid #f0d97a; }
+  .tag-sm { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+  .tag-is { background: #eef0fe; color: #4338ca; border: 1px solid #c7c9f5; }
+  .tag-other { background: var(--surface3); color: var(--text2); border: 1px solid var(--border); }
+
+  /* Sharing */
+  .tag-pub { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+  .tag-org { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+  .tag-shared { background: #eef0fe; color: #4338ca; border: 1px solid #c7c9f5; }
+  .tag-priv { background: var(--surface3); color: var(--text2); border: 1px solid var(--border); }
+
+  .dep-count {
+    font-size: 10px;
+    color: var(--text3);
+    margin-left: auto;
+  }
+
+  /* ─── DETAIL PANEL ─── */
+  .detail-panel {
+    flex: 1;
+    overflow-y: auto;
+    background: var(--bg);
+    padding: 24px 28px;
+  }
+
+  .empty-state {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text3);
+    gap: 14px;
+    text-align: center;
+  }
+  .empty-state p { font-size: 13px; line-height: 1.9; color: var(--text3); }
+
+  .detail-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+  }
+
+  .detail-meta {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .detail-meta-owner {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+  }
+
+  .detail-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .btn-action {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    color: var(--text);
+    padding: 7px 13px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: var(--radius);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.12s;
+    box-shadow: var(--shadow);
+  }
+  .btn-action:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    box-shadow: var(--shadow);
+  }
+
+  .stat-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 5px;
+  }
+
+  .stat-value {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+    font-family: var(--mono);
+    letter-spacing: -0.02em;
+  }
+
+  .stat-sub {
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 2px;
+  }
+
+  .section-heading {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-icon {
+    display: flex;
+    align-items: center;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .count-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+
+  .dep-section { margin-bottom: 24px; }
+
+  .toggle-heading { cursor: pointer; user-select: none; }
+  .toggle-heading:hover { color: var(--text2); }
+  .collapse-chevron {
+    display: flex;
+    align-items: center;
+    color: var(--text3);
+    transition: transform 0.18s ease;
+  }
+  .collapsible:not(.open) .collapse-chevron { transform: rotate(-90deg); }
+  .collapsible:not(.open) .collapse-body { display: none; }
+
+  .dep-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 5px;
+    background: var(--surface);
+    cursor: pointer;
+    transition: border-color 0.12s, box-shadow 0.12s;
+    box-shadow: var(--shadow);
+    text-decoration: none;
+    color: inherit;
+  }
+  .dep-item:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(46,110,230,0.1); }
+
+  .dep-item-icon {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: var(--surface2);
+  }
+
+  .dep-item-info { flex: 1; min-width: 0; }
+
+  .dep-item-name {
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+    color: var(--text);
+  }
+
+  .dep-item-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+  }
+
+  .dep-item-actions { display: flex; gap: 4px; flex-shrink: 0; }
+
+  .icon-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text3);
+    width: 26px; height: 26px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.12s;
+    flex-shrink: 0;
+  }
+  .icon-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+  /* ─── USERS TAB ─── */
+  #tab-users { flex-direction: column; overflow: hidden; }
+
+  .users-content { flex: 1; display: flex; overflow: hidden; }
+
+  .users-list-panel {
+    width: 260px;
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    background: var(--surface);
+  }
+
+  .users-list-header {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  .user-row {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.1s;
+    border-left: 2px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .user-row:hover { background: var(--surface2); }
+  .user-row.selected { background: var(--accent-dim); border-left-color: var(--accent); }
+
+  .user-avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--accent-dim2);
+    color: var(--accent2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+    text-transform: uppercase;
+  }
+
+  .user-row-info { flex: 1; min-width: 0; }
+
+  .user-name {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text);
+  }
+
+  .user-count { font-size: 11px; color: var(--text3); }
+
+  .user-detail-panel { flex: 1; overflow-y: auto; padding: 24px 28px; background: var(--bg); }
+
+  /* ─── CLEANUP TAB ─── */
+  #tab-cleanup { flex-direction: column; overflow: hidden; }
+
+  .cleanup-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    box-shadow: var(--shadow);
+  }
+
+  .cleanup-filter-btn {
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    color: var(--text2);
+    padding: 6px 13px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.12s;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .cleanup-filter-btn:hover { border-color: var(--border2); color: var(--text); }
+  .cleanup-filter-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
+  .stale-input {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    color: var(--text);
+    padding: 2px 6px;
+    font-family: var(--mono);
+    font-size: 12px;
+    border-radius: 5px;
+    width: 60px;
+    outline: none;
+  }
+  .stale-input:focus { border-color: var(--accent); }
+
+  .cleanup-content { flex: 1; overflow: auto; }
+
+  .cleanup-table { width: 100%; border-collapse: collapse; }
+
+  .cleanup-table th {
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    padding: 9px 14px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text3);
+    cursor: pointer;
+    white-space: nowrap;
+    z-index: 1;
+  }
+  .cleanup-table th:hover { color: var(--text2); }
+  .cleanup-table th .sort-arrow { margin-left: 3px; opacity: 0.4; }
+  .cleanup-table th.sorted .sort-arrow { opacity: 1; color: var(--accent); }
+
+  .cleanup-table td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text2);
+    vertical-align: middle;
+    background: var(--surface);
+  }
+
+  .cleanup-table tr:hover td { background: var(--surface2); }
+
+  .td-name {
+    font-weight: 500;
+    color: var(--text);
+    max-width: 260px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .td-mono { font-family: var(--mono); font-size: 11px; }
+
+  .risk-badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .risk-high { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+  .risk-med { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+  .risk-low { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+
+  /* ─── ADMIN TAB ─── */
+  #tab-admin { flex-direction: column; overflow: hidden; }
+  .admin-panel { flex: 1; overflow-y: auto; padding: 24px 28px; background: var(--bg); }
+
+  /* ─── LOADING ─── */
+  #loading-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(244,246,250,0.88);
+    backdrop-filter: blur(2px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .spinner {
+    width: 32px; height: 32px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.75s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-text { font-size: 13px; color: var(--text2); font-family: var(--mono); }
+
+  #toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--text);
+    color: #fff;
+    padding: 9px 15px;
+    border-radius: var(--radius);
+    font-size: 12px;
+    z-index: 2000;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: all 0.18s;
+    pointer-events: none;
+    box-shadow: var(--shadow-md);
+  }
+  #toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ─── SCROLLBARS ─── */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+  .text-accent { color: var(--accent); }
+  .text-green { color: var(--green); }
+  .text-amber { color: var(--amber); }
+  .text-red { color: var(--red); }
+  .ml-auto { margin-left: auto; }
+
+  @media (max-width: 860px) {
+    .sidebar { display: none; }
+    .item-list-panel { width: 100%; min-width: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card" style="text-align:center">
+    <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:28px;gap:12px">
+      <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+        <rect width="52" height="52" rx="12" fill="#e8f0fd"/>
+        <path d="M26 8L44 18V34L26 44L8 34V18L26 8Z" stroke="#2e6ee6" stroke-width="2" fill="none"/>
+        <circle cx="26" cy="26" r="6" fill="#2e6ee6"/>
+      </svg>
+      <div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:4px">City of Salisbury, MD</div>
+        <div style="font-size:22px;font-weight:600;color:var(--text);letter-spacing:-0.02em">Salisbury Org Explorer</div>
+      </div>
+    </div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:32px">
+      Browse item dependencies, audit content, and explore data relationships across the City of Salisbury GIS organization.
+    </div>
+    <!-- Hidden inputs still needed for OAuth logic -->
+    <input id="org-slug" type="hidden" value="salisbury"/>
+    <input id="client-id" type="hidden" value="QhIjoMd47BKm159s"/>
+    <button class="btn-primary" onclick="startOAuth()">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 2a6 6 0 100 12A6 6 0 008 2z" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Sign in with ArcGIS Online
+    </button>
+    <div style="margin-top:16px;font-size:11px;color:var(--text3)">
+      You'll be redirected to the Esri login page.<br>Your data never leaves your browser.
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <svg width="18" height="18" viewBox="0 0 26 26" fill="none">
+        <path d="M13 2L23 8V18L13 24L3 18V8L13 2Z" stroke="#2e6ee6" stroke-width="1.5" fill="none"/>
+        <circle cx="13" cy="13" r="3" fill="#2e6ee6"/>
+      </svg>
+      Org Explorer
+    </div>
+    <span class="topbar-org" id="topbar-org-name">loading...</span>
+    <div class="topbar-tabs">
+      <button class="tab-btn active" onclick="switchTab('explore')">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.4"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Explore
+      </button>
+      <button class="tab-btn" onclick="switchTab('users')">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        By User
+      </button>
+      <button class="tab-btn" onclick="switchTab('cleanup')">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M3 4h10M3 12h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Cleanup Audit
+      </button>
+      <button class="tab-btn" id="admin-tab-btn" style="display:none" onclick="switchTab('admin')">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.4"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Admin
+      </button>
+    </div>
+    <div class="topbar-right">
+      <span class="user-chip" id="topbar-username">—</span>
+      <button class="btn-sm" onclick="refreshData()">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M13.5 8a5.5 5.5 0 11-1.1-3.3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M12.5 2v3h-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Refresh
+      </button>
+      <button class="btn-sm" onclick="signOut()">Sign out</button>
+    </div>
+  </div>
+
+  <!-- EXPLORE TAB -->
+  <div class="tab-panel active" id="tab-explore">
+    <div class="sidebar">
+      <div>
+        <div class="filter-section-title">Item Type</div>
+        <div id="type-filter-list"></div>
+      </div>
+      <div>
+        <div class="filter-section-title">Sharing</div>
+        <div id="sharing-filter-list"></div>
+      </div>
+      <div>
+        <div class="filter-section-title">Owner</div>
+        <input class="owner-search" id="owner-search" placeholder="Search owners..." oninput="filterOwnerList(this.value)">
+        <div class="owner-list" id="owner-filter-list"></div>
+      </div>
+    </div>
+
+    <div class="item-list-panel">
+      <div class="panel-header">
+        <div class="search-box">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#8892aa" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#8892aa" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <input id="item-search" placeholder="Search items..." oninput="renderItemList()">
+        </div>
+        <div class="panel-meta">
+          <span id="item-count-label">0 items</span>
+          <select class="sort-select" id="sort-select" onchange="onChangeSort()">
+            <option value="name">Name A→Z</option>
+            <option value="name-desc">Name Z→A</option>
+            <option value="views">Most viewed</option>
+            <option value="modified">Last modified</option>
+            <option value="deps">Most dependencies</option>
+          </select>
+        </div>
+      </div>
+      <div class="item-list" id="item-list"></div>
+    </div>
+
+    <div class="detail-panel" id="detail-panel">
+      <div class="empty-state">
+        <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+          <path d="M22 4L40 14V30L22 40L4 30V14L22 4Z" stroke="#c4cce0" stroke-width="1.5"/>
+          <circle cx="22" cy="22" r="5" stroke="#c4cce0" stroke-width="1.5"/>
+          <path d="M22 17v-7M22 34v-7M17 22h-7M34 22h-7" stroke="#c4cce0" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <p>Select an item to see its<br>dependencies and details</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- USERS TAB -->
+  <div class="tab-panel" id="tab-users">
+    <div class="users-content">
+      <div class="users-list-panel">
+        <div class="users-list-header">
+          <div class="search-box">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#8892aa" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#8892aa" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <input id="user-search" placeholder="Search users..." oninput="filterUserList(this.value)">
+          </div>
+        </div>
+        <div id="users-list"></div>
+      </div>
+      <div class="user-detail-panel" id="user-detail">
+        <div class="empty-state">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+            <circle cx="20" cy="13" r="6" stroke="#c4cce0" stroke-width="1.5"/>
+            <path d="M5 36c0-8.284 6.716-15 15-15s15 6.716 15 15" stroke="#c4cce0" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <p>Select a user to see<br>their content</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLEANUP TAB -->
+  <div class="tab-panel" id="tab-cleanup">
+    <div class="cleanup-header">
+      <span style="font-size:12px;font-weight:600;color:var(--text2);margin-right:2px;">Filters:</span>
+      <button class="cleanup-filter-btn" data-filter="orphans" onclick="toggleCleanupFilter('orphans', this)">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3M8 11v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Orphans (no dependencies)
+      </button>
+      <button class="cleanup-filter-btn" data-filter="lowuse" onclick="toggleCleanupFilter('lowuse', this)" style="gap:5px">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M2 12l4-4 3 2 5-6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Fewer than
+        <input class="stale-input" id="lowuse-threshold" value="10" type="number" min="0" max="100000" style="width:54px" onclick="event.stopPropagation()" oninput="renderCleanupTable()">
+        views
+      </button>
+      <button class="cleanup-filter-btn" data-filter="stale" onclick="toggleCleanupFilter('stale', this)" style="gap:5px">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Not modified in
+        <input class="stale-input" id="stale-days" value="180" type="number" min="30" max="1800" onclick="event.stopPropagation()" oninput="renderCleanupTable()">
+        days
+      </button>
+      <span style="font-size:11px;color:var(--text3)">combine with AND</span>
+      <span class="ml-auto" style="font-size:11px;color:var(--text3)" id="cleanup-count"></span>
+    </div>
+    <div class="cleanup-content">
+      <table class="cleanup-table">
+        <thead>
+          <tr>
+            <th onclick="sortCleanup('title', this)">Name <span class="sort-arrow">↕</span></th>
+            <th onclick="sortCleanup('type', this)">Type <span class="sort-arrow">↕</span></th>
+            <th onclick="sortCleanup('owner', this)">Owner <span class="sort-arrow">↕</span></th>
+            <th onclick="sortCleanup('access', this)">Sharing <span class="sort-arrow">↕</span></th>
+            <th onclick="sortCleanup('numViews', this)">Views <span class="sort-arrow">↕</span></th>
+            <th onclick="sortCleanup('modified', this)">Last Modified <span class="sort-arrow">↕</span></th>
+            <th onclick="sortCleanup('depCount', this)">Deps <span class="sort-arrow">↕</span></th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="cleanup-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ADMIN TAB -->
+  <div class="tab-panel" id="tab-admin">
+    <div class="admin-panel" id="admin-content">
+      <div class="empty-state"><div class="spinner"></div><p>Loading...</p></div>
+    </div>
+  </div>
+</div>
+
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loading-text">Loading...</div>
+</div>
+<div id="toast"></div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
+const DEFAULT_ORG_SLUG  = 'salisbury';  // Salisbury, MD
+const DEFAULT_CLIENT_ID = 'QhIjoMd47BKm159s';
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let state = {
+  token: null, orgUrl: null, orgId: null,
+  username: null, isAdmin: false,
+  allItems: [], depCache: {}, usageCache: {},
+  selectedItem: null,
+  typeFilter: null, sharingFilter: null, ownerFilters: new Set(),
+  cleanupFilters: new Set(),
+  owners: []
+};
+
+let cleanupSortDir = { col: 'numViews', dir: 'asc' };
+
+// ─── OAUTH ────────────────────────────────────────────────────────────────────
+function startOAuth() {
+  const slug     = document.getElementById('org-slug').value.trim();
+  const clientId = document.getElementById('client-id').value.trim();
+  if (!slug || !clientId) { showToast('Enter your org slug and Client ID'); return; }
+  const orgUrl  = `https://${slug}.maps.arcgis.com`;
+  const redirect = window.location.href.split('?')[0].split('#')[0];
+  sessionStorage.setItem('agol_org', orgUrl);
+  sessionStorage.setItem('agol_client', clientId);
+  localStorage.setItem('agol_org_slug', slug);
+  localStorage.setItem('agol_client_id', clientId);
+  const authUrl = `${orgUrl}/sharing/rest/oauth2/authorize?` +
+    `client_id=${encodeURIComponent(clientId)}&response_type=token&expiration=120` +
+    `&redirect_uri=${encodeURIComponent(redirect)}`;
+  window.location.href = authUrl;
+}
+
+function checkOAuthCallback() {
+  const hash = window.location.hash;
+  if (!hash.includes('access_token')) return false;
+  const params = new URLSearchParams(hash.replace('#',''));
+  const token  = params.get('access_token');
+  const orgUrl = sessionStorage.getItem('agol_org');
+  if (token && orgUrl) {
+    state.token  = token;
+    state.orgUrl = orgUrl;
+    window.history.replaceState({}, document.title, window.location.pathname);
+    return true;
+  }
+  return false;
+}
+
+function signOut() {
+  sessionStorage.clear();
+  localStorage.removeItem('agol_org_slug');
+  localStorage.removeItem('agol_client_id');
+  location.reload();
+}
+
+// ─── API ──────────────────────────────────────────────────────────────────────
+async function agolGet(path, params = {}) {
+  params.f     = 'json';
+  params.token = state.token;
+  const qs  = new URLSearchParams(params).toString();
+  const url = `${state.orgUrl}/sharing/rest${path}?${qs}`;
+  const r   = await fetch(url);
+  return r.json();
+}
+
+function showAccessDenied() {
+  document.getElementById('app').style.display = 'none';
+  const login = document.getElementById('login-screen');
+  login.style.display = 'flex';
+  login.innerHTML = `
+    <div class="login-card" style="text-align:center">
+      <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:24px;gap:12px">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+          <circle cx="24" cy="24" r="20" stroke="#c0392b" stroke-width="2"/>
+          <path d="M24 14v12M24 32v.5" stroke="#c0392b" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+        <div style="font-size:20px;font-weight:600;color:var(--text);letter-spacing:-0.02em">Access Restricted</div>
+      </div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:28px">
+        This tool is available to organization publishers and administrators only.<br><br>
+        Your account doesn't have a publishing or admin role, so there's nothing here for you to manage. Sign in with a publisher or admin account to continue.
+      </div>
+      <button class="btn-primary" onclick="signOut()">Sign in with a different account</button>
+    </div>`;
+}
+
+async function loadOrgInfo() {
+  const info = await agolGet('/portals/self');
+  state.username = info.user?.username || 'unknown';
+  state.orgId    = info.id;
+  const role  = info.user?.role;
+  const privs = info.user?.privileges || [];
+
+  // Admin label: only true org administrators
+  state.isAdmin = role === 'org_admin';
+
+  // Access gate: publishers and admins only. Built-in roles plus custom roles
+  // that carry any publishing privilege (covers custom role IDs that aren't
+  // one of the named built-ins).
+  const canPublish = privs.some(p => p.startsWith('portal:publisher:'));
+  const allowed = role === 'org_admin' || role === 'org_publisher' || canPublish;
+  if (!allowed) { showAccessDenied(); return false; }
+
+  document.getElementById('topbar-username').textContent = state.username + (state.isAdmin ? ' (admin)' : '');
+  document.getElementById('topbar-org-name').textContent = info.name || state.orgUrl;
+  if (state.isAdmin) document.getElementById('admin-tab-btn').style.display = '';
+  return true;
+}
+
+async function loadAllItems() {
+  setLoading(true, 'Loading org items...');
+  const types  = ['Feature Service','Map Service','Image Service','Vector Tile Service',
+                  'Scene Service','Web Map','Web Scene','Dashboard','Web Experience',
+                  'StoryMap','Web Mapping Application','Instant App','Form'];
+  const typeQ  = types.map(t => `type:"${t}"`).join(' OR ');
+  let start = 1, all = [];
+  while (true) {
+    const r = await agolGet('/search', {
+      q: `(${typeQ}) AND orgid:${state.orgId}`,
+      num: 100, start,
+      sortField: 'title', sortOrder: 'asc'
+    });
+    if (!r.results?.length) break;
+    all = all.concat(r.results);
+    setLoading(true, `Loading org items... (${all.length})`);
+    if (r.nextStart === -1 || all.length >= (r.total || 0)) break;
+    start = r.nextStart;
+  }
+  state.allItems = all.map(item => ({ ...item, depCount: 0, depCountLoaded: false }));
+  setLoading(false);
+}
+
+// Relationship types that cover the full dependency picture
+const ALL_REL_TYPES = [
+  'Map2Service','Map2App','Map2FeatureCollection','Map2AppConfig',
+  'Data2Map','Data2App','Data2Scene',
+  'Service2Layer','Service2Data','Service2Service',
+  'App2DependentApp','Scene2App',
+  'WMA2Code','Survey2Service','Survey2Data'
+].join(',');
+
+async function getItemDeps(itemId) {
+  if (state.depCache[itemId]) return state.depCache[itemId];
+  // Fetch both directions concurrently, try all relevant relationship types.
+  // Relationships are directional links from an origin item to a destination
+  // item. For this org's items, the dependency direction that reads naturally
+  // to a user ("what this uses" vs "what depends on this") maps to the reverse
+  // and forward traversals respectively — i.e. the opposite of the raw
+  // forward/reverse labels. See notes to user for details.
+  const [fwd, rev] = await Promise.all([
+    agolGet(`/content/items/${itemId}/relatedItems`, { relationshipTypes: ALL_REL_TYPES, direction: 'forward' }),
+    agolGet(`/content/items/${itemId}/relatedItems`, { relationshipTypes: ALL_REL_TYPES, direction: 'reverse' })
+  ]);
+  const result = {
+    uses:   rev.relatedItems || [],   // upstream: layers/services/data this item consumes
+    usedBy: fwd.relatedItems || []    // downstream: maps/apps that consume this item
+  };
+  state.depCache[itemId] = result;
+  return result;
+}
+
+async function getItemUsage(itemId) {
+  if (state.usageCache[itemId]) return state.usageCache[itemId];
+  try {
+    const end   = Date.now();
+    const start = end - 60 * 24 * 60 * 60 * 1000;
+    // Per-item daily usage comes from the org-level usage endpoint, keyed by
+    // the item id, using startTime/endTime (epoch ms). Reliable time-series
+    // data only exists for hosted services; other item types return nothing
+    // here and we fall back to the cumulative view counter.
+    const r = await agolGet(`/portals/${state.orgId}/usage`, {
+      startTime: start, endTime: end, period: '1d', vars: 'num',
+      etype: 'svcusg', name: itemId
+    });
+    state.usageCache[itemId] = r;
+    return r;
+  } catch(e) { return null; }
+}
+
+// ─── DEP COUNT COMPUTATION ──────────────────────────────────────────────────
+async function computeDepCount(item) {
+  try {
+    const d = await getItemDeps(item.id);
+    item.depCount = d.usedBy.length + d.uses.length;
+  } catch(e) { item.depCount = item.depCount || 0; }
+  item.depCountLoaded = true;
+}
+
+// Run async work over a list with a fixed concurrency limit
+async function runThrottled(arr, fn, limit, onProgress) {
+  let i = 0, done = 0;
+  async function worker() {
+    while (i < arr.length) {
+      const idx = i++;
+      await fn(arr[idx]);
+      done++;
+      if (onProgress && done % 10 === 0) onProgress(done, arr.length);
+    }
+  }
+  await Promise.all(Array.from({length: Math.min(limit, arr.length)}, worker));
+  if (onProgress) onProgress(arr.length, arr.length);
+}
+
+// Ensure EVERY item has an accurate dep count (needed for the "Most
+// dependencies" sort and the orphans audit to be correct across the whole org,
+// not just the first batch). Runs on demand with a progress indicator.
+async function ensureAllDepCounts() {
+  if (state.allDepsComputed || state.computingDeps) return;
+  const pending = state.allItems.filter(i => !i.depCountLoaded);
+  if (!pending.length) { state.allDepsComputed = true; return; }
+  state.computingDeps = true;
+  setLoading(true, `Indexing dependencies... (0 / ${pending.length})`);
+  await runThrottled(pending, computeDepCount, 8, (done, totalN) => {
+    setLoading(true, `Indexing dependencies... (${done} / ${totalN})`);
+  });
+  state.computingDeps = false;
+  state.allDepsComputed = true;
+  setLoading(false);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+async function initApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  const allowed = await loadOrgInfo();
+  if (!allowed) return;
+  await loadAllItems();
+  setLoading(true, 'Indexing dependencies...');
+  // Pre-fetch dep counts for the first 200 items so the list is useful
+  // immediately; the rest are computed on demand (see ensureAllDepCounts).
+  const batch = state.allItems.slice(0, 200);
+  await runThrottled(batch, computeDepCount, 8);
+  if (state.allItems.length <= 200) state.allDepsComputed = true;
+  setLoading(false);
+  buildFilters();
+  renderItemList();
+  renderUserList();
+  renderCleanupTable();
+}
+
+async function refreshData() {
+  state.depCache = {}; state.usageCache = {};
+  state.allDepsComputed = false; state.computingDeps = false;
+  await loadAllItems();
+  const batch = state.allItems.slice(0, 200);
+  await runThrottled(batch, computeDepCount, 8);
+  if (state.allItems.length <= 200) state.allDepsComputed = true;
+  buildFilters(); renderItemList(); renderUserList(); renderCleanupTable();
+  showToast('Data refreshed');
+}
+
+// ─── FILTERS ──────────────────────────────────────────────────────────────────
+const TYPE_COLORS = {
+  'Feature Service':'tag-fs','Map Service':'tag-ms','Image Service':'tag-is',
+  'Vector Tile Service':'tag-vt','Scene Service':'tag-other',
+  'Web Map':'tag-wm','Web Scene':'tag-other','Dashboard':'tag-db',
+  'Web Experience':'tag-wa','StoryMap':'tag-sm',
+  'Web Mapping Application':'tag-wa','Instant App':'tag-wa','Form':'tag-other'
+};
+
+// Clean SVG icons per type
+function typeIcon(type, size=14) {
+  const s = size;
+  const icons = {
+    'Feature Service':       `<svg width="${s}" height="${s}" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4"/></svg>`,
+    'Map Service':           `<svg width="${s}" height="${s}" viewBox="0 0 16 16" fill="none"><path d="M1 4l4-2 6 3 4-2v9l-4 2-6-3-4 2V4z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M5 2v9M11 5v9" stroke="currentColor" stroke-width="1.3"/></svg>`,
+    'Image Service':         `<svg width="${s}" height="${s}" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="3" width="13" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3"/><circle cx="5.5" cy="6.5" r="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1.5 11l4-3.5 3 2.5 2-2 3.5 3" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>`,
+    'Vector Tile Service':   `<svg width="${s}" height="${s}" viewBox="0 0 16 16" fill="none"><path d="M8 2l6 3.5v5L8 14l-6-3.5v-5L8 2z" stroke="currentColor" stroke-width="1.3"/><path d="M8 2v12M2 5.5l6 3.5 6-3.5" stroke="currentColor" stroke-width="1.1"/></svg>`,
+    'Scene Service':         `<svg width="${s}" height="${s}" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/><path d="M2 8h12M8 2a9 9 0 010 12M8 2a9 9 0 000 12" stroke="currentColor" stroke-width="1.1"/></svg>`,
+    'Web Map':               `<svg width="${s}" height="${s}" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="2" width="13" height="12" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5.5 2v12M10.5 2v12M1.5 7h13" stroke="currentColor" stroke-width="1.1"/></svg>`,
+    'Web Scene':             `<svg width="${s}" height="${s}" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="2" width="13" height="12" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 2v12M1.5 7h13M4 2L2 7l2 7M12 2l2 5-2 7" stroke="currentColor" stroke-width="1.1"/></svg>`,
+    'Dashboard':             `<svg width="${s}" height="${s}" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="2" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="9.5" y="2" width="5" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="1.5" y="10" width="5" height="4" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="8.5" y="10" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.3"/></svg>`,
+    'Web Experience':        `<svg width="${s}" height="${s}" viewBox="0 0 16 16" fill="none"><rect x="1" y="2.5" width="14" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M1 6h14" stroke="currentColor" stroke-width="1.2"/><circle cx="3.5" cy="4.25" r=".8" fill="currentColor"/><circle cx="6" cy="4.25" r=".8" fill="currentColor"/></svg>`,
+    'StoryMap':              `<svg width="${s}" height="${s}" viewBox="0 0 16 16" fill="none"><path d="M2 3h12M2 6h9M2 9h10M2 12h7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>`,
+    'Web Mapping Application':`<svg width="${s}" height="${s}" viewBox="0 0 16 16" fill="none"><rect x="2" y="1.5" width="12" height="13" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 5.5h6M5 8h6M5 10.5h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`,
+    'Instant App':           `<svg width="${s}" height="${s}" viewBox="0 0 16 16" fill="none"><path d="M9 2L4 9h4l-1 5 6-7H9l1-5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>`,
+    'Form':                  `<svg width="${s}" height="${s}" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="5" cy="6" r=".5" fill="currentColor"/><circle cx="5" cy="9" r=".5" fill="currentColor"/></svg>`,
+  };
+  return icons[type] || `<svg width="${s}" height="${s}" viewBox="0 0 16 16" fill="none"><rect x="2.5" y="2.5" width="11" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/></svg>`;
+}
+
+function buildFilters() {
+  const types = [...new Set(state.allItems.map(i => i.type))].sort();
+  const tf = document.getElementById('type-filter-list');
+  tf.innerHTML = `<div class="filter-option ${!state.typeFilter?'selected':''}" onclick="setTypeFilter(null,this)">
+    <span class="filter-dot" style="background:var(--text3)"></span>All types
+  </div>` + types.map(t => `
+    <div class="filter-option ${state.typeFilter===t?'selected':''}" onclick="setTypeFilter('${escAttr(t)}',this)">
+      <span style="color:var(--text2)">${typeIcon(t, 13)}</span>
+      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t}</span>
+    </div>`).join('');
+
+  document.getElementById('sharing-filter-list').innerHTML = `
+    <div class="filter-option ${!state.sharingFilter?'selected':''}" onclick="setSharingFilter(null,this)">
+      <span class="filter-dot" style="background:var(--text3)"></span>All
+    </div>
+    <div class="filter-option" onclick="setSharingFilter('public',this)">
+      <span class="filter-dot" style="background:var(--green)"></span>Public
+    </div>
+    <div class="filter-option" onclick="setSharingFilter('org',this)">
+      <span class="filter-dot" style="background:var(--amber)"></span>Org
+    </div>
+    <div class="filter-option" onclick="setSharingFilter('private',this)">
+      <span class="filter-dot" style="background:var(--text3)"></span>Private
+    </div>`;
+
+  state.owners = [...new Set(state.allItems.map(i => i.owner))].sort();
+  renderOwnerList('');
+}
+
+function renderOwnerList(filter) {
+  const list = document.getElementById('owner-filter-list');
+  const filtered = state.owners.filter(o => o.toLowerCase().includes(filter.toLowerCase()));
+  list.innerHTML = filtered.slice(0,30).map(o => `
+    <label class="owner-chip ${state.ownerFilters.has(o)?'selected':''}">
+      <input type="checkbox" ${state.ownerFilters.has(o)?'checked':''} onchange="toggleOwner('${escAttr(o)}',this)">
+      ${escHtml(o)}
+    </label>`).join('');
+}
+
+function filterOwnerList(v) { renderOwnerList(v); }
+function setTypeFilter(t, el) {
+  state.typeFilter = t;
+  document.querySelectorAll('#type-filter-list .filter-option').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected'); renderItemList();
+}
+function setSharingFilter(s, el) {
+  state.sharingFilter = s;
+  document.querySelectorAll('#sharing-filter-list .filter-option').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected'); renderItemList();
+}
+function toggleOwner(o, cb) {
+  if (cb.checked) state.ownerFilters.add(o); else state.ownerFilters.delete(o);
+  renderOwnerList(document.getElementById('owner-search').value);
+  renderItemList();
+}
+
+function getFilteredItems() {
+  const q = document.getElementById('item-search')?.value?.toLowerCase() || '';
+  return state.allItems.filter(item => {
+    if (state.typeFilter && item.type !== state.typeFilter) return false;
+    if (state.sharingFilter && item.access !== state.sharingFilter) return false;
+    if (state.ownerFilters.size > 0 && !state.ownerFilters.has(item.owner)) return false;
+    if (q && !item.title?.toLowerCase().includes(q) && !item.owner?.toLowerCase().includes(q)) return false;
+    return true;
+  });
+}
+
+function getSortedItems(items) {
+  const sort = document.getElementById('sort-select')?.value || 'name';
+  const byName = (a,b) => (a.title||'').localeCompare(b.title||'', undefined, { numeric:true, sensitivity:'base' });
+  return [...items].sort((a,b) => {
+    switch(sort) {
+      case 'name':     return byName(a,b);
+      case 'name-desc':return byName(b,a);
+      case 'views':    return (b.numViews||0)-(a.numViews||0);
+      case 'modified': return (b.modified||0)-(a.modified||0);
+      case 'deps':     return ((b.depCount||0)-(a.depCount||0)) || byName(a,b);
+      default: return 0;
+    }
+  });
+}
+
+// ─── ITEM LIST ────────────────────────────────────────────────────────────────
+async function onChangeSort() {
+  const sort = document.getElementById('sort-select')?.value;
+  if (sort === 'deps' && !state.allDepsComputed) {
+    await ensureAllDepCounts();
+  }
+  renderItemList();
+}
+
+function renderItemList() {
+  const items = getSortedItems(getFilteredItems());
+  document.getElementById('item-count-label').textContent = `${items.length.toLocaleString()} items`;
+  const list = document.getElementById('item-list');
+  if (!items.length) {
+    list.innerHTML = `<div style="padding:28px;text-align:center;color:var(--text3);font-size:12px">No items match your filters</div>`;
+    return;
+  }
+  list.innerHTML = items.map(item => `
+    <div class="item-card ${state.selectedItem?.id===item.id?'selected':''}" onclick="selectItem('${item.id}')">
+      <div class="item-name" title="${escAttr(item.title)}">${escHtml(item.title)}</div>
+      <div class="item-owner">${escHtml(item.owner)}</div>
+      <div class="tag-row">
+        <span class="tag ${TYPE_COLORS[item.type]||'tag-other'}">${shortType(item.type)}</span>
+        <span class="tag ${sharingTag(item.access)}">${item.access||'private'}</span>
+        ${item.depCount ? `<span class="dep-count">${item.depCount} dep${item.depCount!==1?'s':''}</span>` : ''}
+        ${item.numViews ? `<span class="dep-count ml-auto" title="Lifetime views">${fmtNum(item.numViews)} views</span>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+// ─── ITEM DETAIL ──────────────────────────────────────────────────────────────
+async function selectItem(id) {
+  state.selectedItem = state.allItems.find(i => i.id === id);
+  renderItemList();
+  const panel = document.getElementById('detail-panel');
+  panel.innerHTML = `<div class="empty-state"><div class="spinner"></div><p>Loading dependencies...</p></div>`;
+  const item = state.selectedItem;
+  let deps;
+  try { deps = await getItemDeps(id); }
+  catch(e) { panel.innerHTML = `<div class="empty-state"><p style="color:var(--red)">Failed to load dependencies</p></div>`; return; }
+
+  const orgUrl = state.orgUrl;
+  const appUrl = itemAppUrl(item);
+
+  const isService = ['Feature Service','Map Service','Image Service','Vector Tile Service','Scene Service'].includes(item.type);
+  const isMap = item.type === 'Web Map' || item.type === 'Web Scene';
+
+  const usesLabel   = isService ? 'Source data / sublayers' : isMap ? 'Layers & services in this map' : 'Items this uses';
+  const usedByLabel = isService ? 'Maps & apps using this' : isMap ? 'Apps built on this map' : 'Items that depend on this';
+
+  panel.innerHTML = `
+    <div class="detail-title">${escHtml(item.title)}</div>
+    <div class="detail-meta">
+      <span class="tag ${TYPE_COLORS[item.type]||'tag-other'}">${item.type}</span>
+      <span class="tag ${sharingTag(item.access)}">${item.access||'private'}</span>
+      <span class="detail-meta-owner">${escHtml(item.owner)}</span>
+    </div>
+
+    <div class="detail-actions">
+      <a class="btn-action" href="${orgUrl}/home/item.html?id=${id}" target="_blank">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M7 3H3a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1V9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9 2h5v5M14 2L8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Item page
+      </a>
+      ${appUrl ? `<a class="btn-action" href="${appUrl}" target="_blank">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><polygon points="4,2 14,8 4,14" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" fill="none"/></svg>
+        Open ${isService?'Service':isMap?'Map':'App'}
+      </a>` : ''}
+      <button class="btn-action" onclick="copyToClipboard('${id}')">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="5" y="4" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M3 12V3a1 1 0 011-1h6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Copy ID
+      </button>
+    </div>
+
+    <div class="detail-grid">
+      <div class="stat-card">
+        <div class="stat-label">Views</div>
+        <div class="stat-value ${(item.numViews||0)>1000?'text-green':''}">${fmtNum(item.numViews||0)}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Last Modified</div>
+        <div class="stat-value" style="font-size:14px">${fmtDate(item.modified)}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Created</div>
+        <div class="stat-value" style="font-size:14px">${fmtDate(item.created)}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Item ID</div>
+        <div class="stat-value" style="font-size:9px;word-break:break-all;font-family:var(--mono)">${id}</div>
+      </div>
+    </div>
+
+    ${item.snippet ? `<div style="font-size:12px;color:var(--text2);margin-bottom:20px;line-height:1.75;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)">${escHtml(item.snippet)}</div>` : ''}
+
+    <div class="dep-section" id="usage-section">
+      <div class="section-heading">
+        <span class="section-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><polyline points="1,11 5,6 9,9 15,2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        Views (last 60 days)
+        <span class="count-badge" id="usage-badge">—</span>
+      </div>
+      <div id="usage-chart" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;min-height:70px;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:12px">
+        <div class="spinner" style="width:20px;height:20px;border-width:2px"></div>
+      </div>
+    </div>
+
+    <div class="dep-section collapsible open">
+      <div class="section-heading toggle-heading" onclick="toggleDepSection(this)">
+        <span class="section-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M4 10l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        ${escHtml(usedByLabel)}
+        <span class="count-badge">${deps.usedBy.length}</span>
+        <span class="collapse-chevron ml-auto"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </div>
+      <div class="collapse-body">
+      ${deps.usedBy.length===0
+        ? `<div style="color:var(--text3);font-size:12px;padding:10px 0">No items depend on this — may be an orphan</div>`
+        : deps.usedBy.map(d => depItemHtml(d)).join('')}
+      </div>
+    </div>
+
+    <div class="dep-section collapsible open">
+      <div class="section-heading toggle-heading" onclick="toggleDepSection(this)">
+        <span class="section-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 14V2M4 6l4-4 4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        ${escHtml(usesLabel)}
+        <span class="count-badge">${deps.uses.length}</span>
+        <span class="collapse-chevron ml-auto"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </div>
+      <div class="collapse-body">
+      ${deps.uses.length===0
+        ? `<div style="color:var(--text3);font-size:12px;padding:10px 0">No upstream dependencies</div>`
+        : deps.uses.map(d => depItemHtml(d)).join('')}
+      </div>
+    </div>`;
+
+  renderUsageChart(id);
+}
+
+function depItemHtml(d) {
+  const appUrl = itemAppUrl(d);
+  return `
+    <div class="dep-item" onclick="selectItem('${d.id}')">
+      <div class="dep-item-icon" style="color:var(--accent2)">${typeIcon(d.type, 15)}</div>
+      <div class="dep-item-info">
+        <div class="dep-item-name">${escHtml(d.title)}</div>
+        <div class="dep-item-meta">${escHtml(d.type)} · ${escHtml(d.owner||'')}</div>
+      </div>
+      <div class="dep-item-actions">
+        <a class="icon-btn" href="${state.orgUrl}/home/item.html?id=${d.id}" target="_blank" title="Item page" onclick="event.stopPropagation()">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M7 3H3a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9 2h5v5M14 2L8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        ${appUrl ? `<a class="icon-btn" href="${appUrl}" target="_blank" title="Open" onclick="event.stopPropagation()">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><polygon points="3,2 13,8 3,14" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" fill="none"/></svg>
+        </a>` : ''}
+      </div>
+    </div>`;
+}
+
+function toggleDepSection(headingEl) {
+  headingEl.closest('.collapsible')?.classList.toggle('open');
+}
+
+function itemAppUrl(item) {
+  if (!item) return '';
+  if (item.url) return item.url;
+  const id = item.id, org = state.orgUrl;
+  switch(item.type) {
+    case 'Web Map':                   return `${org}/home/webmap/viewer.html?webmap=${id}`;
+    case 'Web Scene':                 return `${org}/home/webscene/viewer.html?webscene=${id}`;
+    case 'Dashboard':                 return `${org}/apps/dashboards/${id}`;
+    case 'Web Experience':            return `${org}/apps/experiencebuilder/experience/?id=${id}`;
+    case 'StoryMap':                  return `${org}/apps/storymaps/stories/${id}`;
+    case 'Web Mapping Application':   return `${org}/apps/webappbuilder/index.html?id=${id}`;
+    default: return '';
+  }
+}
+
+async function renderUsageChart(itemId) {
+  const container = document.getElementById('usage-chart');
+  const badge     = document.getElementById('usage-badge');
+  if (!container) return;
+  const item   = state.allItems.find(i => i.id === itemId) || state.selectedItem;
+  const usage  = await getItemUsage(itemId);
+  let series   = usage?.data?.[0]?.num || [];
+  const seriesTotal = series.reduce((s,p) => s+(Number(p[1])||0), 0);
+
+  // Fall back to the cumulative lifetime view counter when no daily series is
+  // available (the case for web maps, apps, and most non-service items).
+  if (!series.length || seriesTotal === 0) {
+    const lifetime = item?.numViews || 0;
+    badge.textContent = `${fmtNum(lifetime)} total`;
+    container.innerHTML = `
+      <div style="text-align:center;width:100%">
+        <div style="font-family:var(--mono);font-size:26px;font-weight:600;color:${lifetime>0?'var(--accent)':'var(--text3)'}">${fmtNum(lifetime)}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px">lifetime views</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:8px;line-height:1.6">Day-by-day usage is only tracked for hosted services.<br>For this item type ArcGIS reports a cumulative total only.</div>
+      </div>`;
+    return;
+  }
+
+  const max = Math.max(...series.map(p => Number(p[1])||0), 1);
+  badge.textContent = `${fmtNum(seriesTotal)} in 60 days`;
+  const w=600, h=70;
+  const barW = w / series.length;
+  let bars = '';
+  series.forEach((p, i) => {
+    const v    = Number(p[1])||0;
+    const barH = Math.max((v/max)*(h-16), v>0?2:0);
+    const x    = i * barW;
+    const y    = h - barH - 2;
+    const date = new Date(Number(p[0])).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    bars += `<rect x="${x+0.5}" y="${y}" width="${Math.max(barW-1.5,0.5)}" height="${barH}" rx="2" fill="var(--accent)" opacity="${v>0?0.75:0.15}"><title>${date}: ${v} views</title></rect>`;
+  });
+  const d1 = new Date(Number(series[0][0])).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  const d2 = new Date(Number(series[series.length-1][0])).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  container.innerHTML = `
+    <div style="width:100%">
+      <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="width:100%;height:70px;display:block">${bars}</svg>
+      <div style="display:flex;justify-content:space-between;margin-top:6px;font-family:var(--mono);font-size:10px;color:var(--text3)">
+        <span>${d1}</span><span>Hover bars for detail</span><span>${d2}</span>
+      </div>
+    </div>`;
+}
+
+// ─── USERS TAB ────────────────────────────────────────────────────────────────
+function renderUserList() {
+  const users  = [...new Set(state.allItems.map(i => i.owner))].sort();
+  const counts = {};
+  state.allItems.forEach(i => { counts[i.owner] = (counts[i.owner]||0)+1; });
+  document.getElementById('users-list').innerHTML = users.map(u => `
+    <div class="user-row" onclick="selectUser('${escAttr(u)}', this)">
+      <div class="user-avatar">${u.charAt(0)}</div>
+      <div class="user-row-info">
+        <div class="user-name">${escHtml(u)}</div>
+        <div class="user-count">${counts[u]} item${counts[u]!==1?'s':''}</div>
+      </div>
+    </div>`).join('');
+}
+
+function filterUserList(v) {
+  document.querySelectorAll('.user-row').forEach(r => {
+    r.style.display = r.textContent.toLowerCase().includes(v.toLowerCase()) ? '' : 'none';
+  });
+}
+
+function selectUser(username, el) {
+  document.querySelectorAll('.user-row').forEach(r => r.classList.remove('selected'));
+  el.classList.add('selected');
+  const items      = state.allItems.filter(i => i.owner === username);
+  const totalViews = items.reduce((s,i) => s+(i.numViews||0), 0);
+  const panel      = document.getElementById('user-detail');
+  panel.innerHTML = `
+    <div class="detail-title" style="margin-bottom:4px">${escHtml(username)}</div>
+    <div style="color:var(--text3);font-size:12px;margin-bottom:20px">${items.length} items · ${fmtNum(totalViews)} total views</div>
+    <div class="detail-grid" style="margin-bottom:24px">
+      <div class="stat-card"><div class="stat-label">Total Items</div><div class="stat-value">${items.length}</div></div>
+      <div class="stat-card"><div class="stat-label">Total Views</div><div class="stat-value">${fmtNum(totalViews)}</div></div>
+      <div class="stat-card"><div class="stat-label">Public</div><div class="stat-value text-green">${items.filter(i=>i.access==='public').length}</div></div>
+      <div class="stat-card"><div class="stat-label">Private</div><div class="stat-value">${items.filter(i=>i.access==='private').length}</div></div>
+    </div>
+    ${['Feature Service','Map Service','Vector Tile Service','Image Service','Web Map','Web Scene',
+       'Dashboard','Web Experience','StoryMap','Web Mapping Application','Instant App','Form'].map(type => {
+      const typed = items.filter(i => i.type === type);
+      if (!typed.length) return '';
+      return `<div class="dep-section">
+        <div class="section-heading">
+          <span class="section-icon" style="color:var(--accent2)">${typeIcon(type,13)}</span>
+          ${escHtml(type)} <span class="count-badge">${typed.length}</span>
+        </div>
+        ${typed.sort((a,b)=>(b.numViews||0)-(a.numViews||0)).map(item => `
+          <div class="dep-item" onclick="switchTab('explore');setTimeout(()=>selectItem('${item.id}'),80)">
+            <div class="dep-item-info">
+              <div class="dep-item-name">${escHtml(item.title)}</div>
+              <div class="dep-item-meta">${item.access} · ${fmtNum(item.numViews||0)} views · modified ${fmtDate(item.modified)}</div>
+            </div>
+            <div class="dep-item-actions">
+              <a class="icon-btn" href="${state.orgUrl}/home/item.html?id=${item.id}" target="_blank" onclick="event.stopPropagation()">
+                <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M7 3H3a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9 2h5v5M14 2L8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </div>`).join('')}
+      </div>`;
+    }).join('')}`;
+}
+
+// ─── CLEANUP TAB ──────────────────────────────────────────────────────────────
+async function toggleCleanupFilter(f, el) {
+  if (state.cleanupFilters.has(f)) {
+    state.cleanupFilters.delete(f);
+    el.classList.remove('active');
+  } else {
+    state.cleanupFilters.add(f);
+    el.classList.add('active');
+  }
+  // Orphan detection needs an accurate dep count for every item, not just the
+  // first prefetched batch.
+  if (f === 'orphans' && state.cleanupFilters.has('orphans') && !state.allDepsComputed) {
+    await ensureAllDepCounts();
+  }
+  renderCleanupTable();
+}
+
+function sortCleanup(col, th) {
+  if (cleanupSortDir.col === col) cleanupSortDir.dir = cleanupSortDir.dir==='asc'?'desc':'asc';
+  else cleanupSortDir = { col, dir: 'asc' };
+  document.querySelectorAll('.cleanup-table th').forEach(h => {
+    h.classList.remove('sorted');
+    const a = h.querySelector('.sort-arrow'); if (a) a.textContent = '↕';
+  });
+  if (th) {
+    th.classList.add('sorted');
+    const a = th.querySelector('.sort-arrow'); if (a) a.textContent = cleanupSortDir.dir==='asc'?'↑':'↓';
+  }
+  renderCleanupTable();
+}
+
+function renderCleanupTable() {
+  const staleDays = parseInt(document.getElementById('stale-days')?.value||'180');
+  const staleMs   = staleDays * 86400000;
+  const lowuseMax = parseInt(document.getElementById('lowuse-threshold')?.value||'10');
+  const now       = Date.now();
+  const f         = state.cleanupFilters;
+  let items       = [...state.allItems];
+
+  // Apply every active filter with AND logic — an item must satisfy all of them.
+  if (f.has('orphans')) {
+    items = items.filter(i =>
+      ['Feature Service','Map Service','Image Service','Vector Tile Service','Scene Service'].includes(i.type)
+      && (i.depCount||0) === 0
+    );
+  }
+  if (f.has('lowuse')) {
+    items = items.filter(i => (i.numViews||0) < lowuseMax);
+  }
+  if (f.has('stale')) {
+    items = items.filter(i => i.modified && (now - i.modified) > staleMs);
+  }
+
+  const strCols = { title:1, type:1, owner:1, access:1 };
+  items.sort((a,b) => {
+    const col = cleanupSortDir.col;
+    if (strCols[col]) {
+      const av=(a[col]||''), bv=(b[col]||'');
+      const cmp = av.localeCompare(bv, undefined, { numeric:true, sensitivity:'base' });
+      return cleanupSortDir.dir==='asc' ? cmp : -cmp;
+    }
+    const av=a[col]||0, bv=b[col]||0;
+    return cleanupSortDir.dir==='asc' ? av-bv : bv-av;
+  });
+  document.getElementById('cleanup-count').textContent = `${items.length} items`;
+  const tbody = document.getElementById('cleanup-tbody');
+  if (!items.length) {
+    const msg = f.size ? 'No items match these filters' : 'No items';
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:36px;background:var(--bg)">${msg}</td></tr>`;
+    return;
+  }
+  const now2 = Date.now();
+  tbody.innerHTML = items.map(item => {
+    const age  = item.modified ? Math.floor((now2-item.modified)/86400000) : null;
+    const risk = (item.numViews||0) > 100 ? 'high' : (item.numViews||0) > 10 ? 'med' : 'low';
+    return `<tr>
+      <td class="td-name" title="${escAttr(item.title)}">${escHtml(item.title)}</td>
+      <td><span class="tag ${TYPE_COLORS[item.type]||'tag-other'}">${shortType(item.type)}</span></td>
+      <td class="td-mono">${escHtml(item.owner)}</td>
+      <td><span class="tag ${sharingTag(item.access)}">${item.access||'private'}</span></td>
+      <td class="td-mono">${fmtNum(item.numViews||0)}</td>
+      <td class="td-mono">${age!==null?`${age}d ago`:'—'}</td>
+      <td class="td-mono">${item.depCount||0}</td>
+      <td>
+        <div style="display:flex;gap:4px">
+          <a class="icon-btn" href="${state.orgUrl}/home/item.html?id=${item.id}" target="_blank" title="Item page">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M7 3H3a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9 2h5v5M14 2L8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <button class="icon-btn" title="View deps" onclick="switchTab('explore');setTimeout(()=>selectItem('${item.id}'),80)">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ─── ADMIN TAB ────────────────────────────────────────────────────────────────
+function renderAdminTab() {
+  const c          = document.getElementById('admin-content');
+  const total      = state.allItems.length;
+  const totalViews = state.allItems.reduce((s,i) => s+(i.numViews||0), 0);
+  const pubCount   = state.allItems.filter(i=>i.access==='public').length;
+  const orgCount   = state.allItems.filter(i=>i.access==='org').length;
+  const privCount  = state.allItems.filter(i=>i.access==='private').length;
+  const owners     = new Set(state.allItems.map(i=>i.owner)).size;
+  const ownerCounts = {}, ownerViews = {};
+  state.allItems.forEach(i => {
+    ownerCounts[i.owner] = (ownerCounts[i.owner]||0)+1;
+    ownerViews[i.owner]  = (ownerViews[i.owner]||0)+(i.numViews||0);
+  });
+  const topCount = Object.entries(ownerCounts).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const topViews = Object.entries(ownerViews).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const typeCounts = {};
+  state.allItems.forEach(i => { typeCounts[i.type] = (typeCounts[i.type]||0)+1; });
+  const typesSorted = Object.entries(typeCounts).sort((a,b)=>b[1]-a[1]);
+  const pct = n => total ? Math.round(n/total*100) : 0;
+
+  c.innerHTML = `
+    <div class="detail-title" style="margin-bottom:4px">Admin Overview</div>
+    <div style="color:var(--text3);font-size:12px;margin-bottom:24px">All items visible to your account in this org</div>
+    <div class="detail-grid" style="margin-bottom:28px">
+      <div class="stat-card"><div class="stat-label">Total Items</div><div class="stat-value">${fmtNum(total)}</div></div>
+      <div class="stat-card"><div class="stat-label">Total Views</div><div class="stat-value">${fmtNum(totalViews)}</div></div>
+      <div class="stat-card"><div class="stat-label">Unique Owners</div><div class="stat-value">${owners}</div></div>
+      <div class="stat-card"><div class="stat-label">Public</div><div class="stat-value text-green">${pubCount}</div><div class="stat-sub">${pct(pubCount)}% of items</div></div>
+      <div class="stat-card"><div class="stat-label">Org-shared</div><div class="stat-value text-amber">${orgCount}</div><div class="stat-sub">${pct(orgCount)}% of items</div></div>
+      <div class="stat-card"><div class="stat-label">Private</div><div class="stat-value">${privCount}</div><div class="stat-sub">${pct(privCount)}% of items</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:28px">
+      <div>
+        <div class="section-heading">
+          <span class="section-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M4 10l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          Top Owners by Item Count
+        </div>
+        ${topCount.map(([u,n],i) => `
+          <div class="dep-item" onclick="switchTab('users');setTimeout(()=>{[...document.querySelectorAll('.user-row')].find(r=>r.textContent.includes('${escAttr(u)}'))?.click()},80)">
+            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);width:18px;flex-shrink:0">${i+1}</div>
+            <div class="user-avatar" style="width:24px;height:24px;font-size:9px">${u.charAt(0)}</div>
+            <div class="dep-item-info"><div class="dep-item-name" style="font-family:var(--mono);font-size:11px">${escHtml(u)}</div><div class="dep-item-meta">${n} items</div></div>
+            <div style="font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent)">${n}</div>
+          </div>`).join('')}
+      </div>
+      <div>
+        <div class="section-heading">
+          <span class="section-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.3"/></svg></span>
+          Top Owners by Total Views
+        </div>
+        ${topViews.map(([u,v],i) => `
+          <div class="dep-item" onclick="switchTab('users');setTimeout(()=>{[...document.querySelectorAll('.user-row')].find(r=>r.textContent.includes('${escAttr(u)}'))?.click()},80)">
+            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);width:18px;flex-shrink:0">${i+1}</div>
+            <div class="user-avatar" style="width:24px;height:24px;font-size:9px">${u.charAt(0)}</div>
+            <div class="dep-item-info"><div class="dep-item-name" style="font-family:var(--mono);font-size:11px">${escHtml(u)}</div><div class="dep-item-meta">${fmtNum(v)} total views</div></div>
+            <div style="font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent)">${fmtNum(v)}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div class="section-heading">
+      <span class="section-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="2" width="13" height="12" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M5.5 2v12M1.5 7h13" stroke="currentColor" stroke-width="1.1"/></svg></span>
+      Content Type Breakdown
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin-bottom:28px">
+      ${typesSorted.map(([type,n]) => `
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:11px 14px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow)">
+          <span style="color:var(--accent2)">${typeIcon(type,16)}</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(type)}</div>
+            <div style="font-size:10px;color:var(--text3)">${n} item${n!==1?'s':''}</div>
+          </div>
+          <div style="font-family:var(--mono);font-size:16px;font-weight:600;color:var(--accent)">${n}</div>
+        </div>`).join('')}
+    </div>
+    <div class="section-heading">
+      <span class="section-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.4"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span>
+      Quick Admin Links
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px">
+      ${[
+        ['Org Settings', 'organization.html', `<path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.4"/>`],
+        ['Manage Members','organization.html?tab=members', `<circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.3"/><path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>`],
+        ['Usage & Status', 'organization.html?tab=status', `<polyline points="1,11 5,6 9,9 15,2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>`]
+      ].map(([label, path, svgPath]) => `
+        <a class="dep-item" href="${state.orgUrl}/home/${path}" target="_blank" style="text-decoration:none">
+          <div class="dep-item-icon" style="color:var(--accent2)"><svg width="15" height="15" viewBox="0 0 16 16" fill="none">${svgPath}</svg></div>
+          <div class="dep-item-info">
+            <div class="dep-item-name">${label}</div>
+            <div class="dep-item-meta">Open in ArcGIS Online</div>
+          </div>
+        </a>`).join('')}
+    </div>`;
+}
+
+// ─── TABS ─────────────────────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`tab-${name}`).classList.add('active');
+  // Match tab button by which tab it opens
+  const map = { explore:0, users:1, cleanup:2, admin:3 };
+  const btns = document.querySelectorAll('.tab-btn');
+  const idx  = map[name];
+  if (idx !== undefined && btns[idx]) btns[idx].classList.add('active');
+  if (name === 'admin') renderAdminTab();
+}
+
+// ─── UTILS ────────────────────────────────────────────────────────────────────
+function shortType(t) {
+  const m = {
+    'Feature Service':'Feature Svc','Map Service':'Map Svc','Image Service':'Image Svc',
+    'Vector Tile Service':'Vector Tile','Scene Service':'Scene Svc',
+    'Web Map':'Web Map','Web Scene':'Web Scene','Dashboard':'Dashboard',
+    'Web Experience':'Experience','StoryMap':'StoryMap',
+    'Web Mapping Application':'Web App','Instant App':'Instant App','Form':'Form'
+  };
+  return m[t] || t;
+}
+
+function sharingTag(access) {
+  if (access==='public') return 'tag-pub';
+  if (access==='org') return 'tag-org';
+  if (access==='shared') return 'tag-shared';
+  return 'tag-priv';
+}
+
+function fmtNum(n) {
+  if (!n) return '0';
+  if (n>=1000000) return (n/1000000).toFixed(1)+'M';
+  if (n>=1000)    return (n/1000).toFixed(1)+'K';
+  return n.toString();
+}
+
+function fmtDate(ts) {
+  if (!ts) return '—';
+  return new Date(ts).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
+}
+
+function escHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escAttr(s) {
+  return (s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+}
+
+function setLoading(show, text='') {
+  document.getElementById('loading-overlay').style.display = show ? 'flex' : 'none';
+  if (text) document.getElementById('loading-text').textContent = text;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard'));
+}
+
+// ─── BOOT ─────────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  const savedSlug   = localStorage.getItem('agol_org_slug');
+  const savedClient = localStorage.getItem('agol_client_id');
+  const sessOrg     = sessionStorage.getItem('agol_org');
+  const sessClient  = sessionStorage.getItem('agol_client');
+
+  // Salisbury version: credentials are hardcoded, hidden inputs already set in HTML
+  // (no user-editable fields)
+
+  if (checkOAuthCallback()) initApp();
+});
+</script>
+</body>
+</html>
